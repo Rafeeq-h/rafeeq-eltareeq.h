@@ -440,6 +440,8 @@ const GOVS_ALL=Object.keys(GOV_DATA);
 let currentRole=null,currentTab='register';
 let forgotTargetUser = null;
 
+const CLOUD_SYNC_URL = 'https://rafeeq-eltareeq-default-rtdb.firebaseio.com/users.json';
+
 function cleanStr(str) {
   return (str || '').toString().trim().toLowerCase().replace(/[\s\-\+]/g, '');
 }
@@ -447,6 +449,7 @@ function cleanStr(str) {
 document.addEventListener('DOMContentLoaded',()=>{
   if(LOGO_SRC){document.getElementById('logo-img').src=LOGO_SRC;document.getElementById('top-logo').src=LOGO_SRC;}
   populateGovs('d-gov');populateGovs('c-gov');
+  fetchCloudUsers();
   const sess=getSession();if(sess)enterPlatform(sess);
 });
 
@@ -503,7 +506,7 @@ function verifyForgotUser(){
   );
   
   if(!target){
-    setErr('err-forgot-search','لم يتم العثور على حساب بهذه البيانات على هذا الجهاز! إذا كنت قد سجلت من جهاز آخر يرجى إنشاء الحساب أولاً على هذا المتصفح.');
+    setErr('err-forgot-search','لم يتم العثور على حساب بهذه البيانات! يرجى إنشاء الحساب أولاً.');
     return;
   }
   
@@ -565,7 +568,40 @@ function clearErrors(){document.querySelectorAll('.field-err').forEach(e=>e.text
 
 const STORE_KEY='rafiq_users';
 function getUsers(){try{return JSON.parse(localStorage.getItem(STORE_KEY))||[];}catch{return[];}}
-function saveUsers(u){localStorage.setItem(STORE_KEY,JSON.stringify(u));}
+function saveUsers(u){
+  localStorage.setItem(STORE_KEY,JSON.stringify(u));
+  // Sync to Cloud DB
+  try {
+    fetch(CLOUD_SYNC_URL, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(u)
+    }).catch(e=>console.log(e));
+  } catch(e){}
+}
+
+function fetchCloudUsers(){
+  try {
+    fetch(CLOUD_SYNC_URL)
+      .then(res => res.json())
+      .then(cloudData => {
+        if(cloudData) {
+          let cloudArray = Array.isArray(cloudData) ? cloudData : Object.values(cloudData);
+          if(cloudArray.length > 0) {
+            const localUsers = getUsers();
+            const merged = [...localUsers];
+            cloudArray.forEach(cu => {
+              const idx = merged.findIndex(x => cleanStr(x.username) === cleanStr(cu.username));
+              if(idx > -1) merged[idx] = {...merged[idx], ...cu};
+              else merged.push(cu);
+            });
+            localStorage.setItem(STORE_KEY, JSON.stringify(merged));
+          }
+        }
+      }).catch(e=>console.log(e));
+  } catch(e){}
+}
+
 function getSession(){try{return JSON.parse(sessionStorage.getItem('rafiq_session'));}catch{return null;}}
 function saveSession(d){sessionStorage.setItem('rafiq_session',JSON.stringify(d));}
 function clearSession(){sessionStorage.removeItem('rafiq_session');}
@@ -618,7 +654,7 @@ function submitRegister(){
     };
     users.push(user);saveUsers(users);saveSession(user);
     closeAuth();enterPlatform(user);
-    showAlert('تم إنشاء حسابك بنجاح على هذا المتصفح! يمكنك الآن مشاهدة الكورس والبدء في الاختبار.');
+    showAlert('تم إنشاء حسابك بنجاح! تم مزامنة البيانات سحابياً لتظهر في لوحة تحكم الإدارة فوراً.');
   } else {
     const username=v('c-username'),email=v('c-email'),phone=v('c-phone'),dob=v('c-dob');
     const pass=v('c-pass'),pass2=v('c-pass2'),gov=v('c-gov'),district=v('c-district');
@@ -650,7 +686,6 @@ function submitLogin(){
   if(!pass){setErr('err-login-pass','أدخل كلمة المرور');return;}
   
   const users=getUsers();
-  // Flexible lookup by username, phone, or email with string cleaning
   const user=users.find(u=>
     (
       cleanStr(u.username) === loginId ||
@@ -660,7 +695,7 @@ function submitLogin(){
   );
   
   if(!user){
-    setErr('err-login-pass','البيانات غير صحيحة أو لم يتم تسجيل هذا الحساب على هذا الجهاز بعد!');
+    setErr('err-login-pass','البيانات غير صحيحة! تأكد من إدخال بيانات حسابك بشكل صحيح.');
     return;
   }
   
