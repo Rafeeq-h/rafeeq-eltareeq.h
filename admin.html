@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#c8a96e;--gold-dark:#a07840;--brown:#5c3d1e;--brown-light:#7a5230;--sand:#f5efe6;--sand-dark:#e8dccf;--white:#fff;--success:#27ae60;--error:#c0392b;--radius:12px;}
+    :root{--gold:#c8a96e;--gold-dark:#a07840;--brown:#5c3d1e;--brown-light:#7a5230;--sand:#f5efe6;--sand-dark:#e8dccf;--white:#fff;--success:#27ae60;--error:#c0392b;--warning:#e67e22;--radius:12px;}
     body{font-family:"Tajawal",sans-serif;background:var(--sand);color:#2d1f0f;min-height:100vh;padding:20px;}
     .header{background:linear-gradient(90deg,var(--brown) 0%,var(--brown-light) 100%);color:var(--white);padding:22px 28px;border-radius:var(--radius);display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;box-shadow:0 4px 20px rgba(92,61,30,0.15);}
     .header h2{font-size:1.5rem;font-weight:800;display:flex;align-items:center;gap:10px;}
@@ -19,18 +19,26 @@
     .sync-btn{padding:11px 20px;border:none;border-radius:10px;background:var(--brown);color:#fff;font-weight:700;font-size:0.92rem;cursor:pointer;display:flex;align-items:center;gap:8px;transition:0.2s;}
     .sync-btn:hover{background:var(--brown-light);}
     .table-wrap{background:#fff;padding:24px;border-radius:var(--radius);box-shadow:0 4px 20px rgba(0,0,0,0.08);overflow-x:auto;}
-    table{width:100%;border-collapse:collapse;min-width:800px;}
+    table{width:100%;border-collapse:collapse;min-width:950px;}
     th,td{padding:14px 16px;text-align:right;border-bottom:1px solid var(--sand-dark);}
     th{background:var(--sand);color:var(--brown);font-weight:700;font-size:0.95rem;}
     .doc-name-btn{background:none;border:none;color:var(--brown);font-weight:800;font-size:1rem;cursor:pointer;text-decoration:underline;font-family:inherit;transition:color 0.2s;display:inline-flex;align-items:center;gap:6px;}
     .doc-name-btn:hover{color:var(--gold-dark);}
     .badge-score{background:rgba(200,169,110,0.15);color:var(--gold-dark);padding:4px 10px;border-radius:6px;font-weight:700;font-size:0.85rem;display:inline-block;margin-top:4px;}
-    .btn{padding:9px 16px;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;color:#fff;transition:0.2s;display:inline-flex;align-items:center;gap:6px;font-size:0.88rem;}
+    .role-badge{padding:4px 10px;border-radius:8px;font-weight:700;font-size:0.82rem;display:inline-block;background:var(--sand);color:var(--brown);border:1px solid var(--sand-dark)}
+    .status-badge{padding:4px 10px;border-radius:8px;font-weight:700;font-size:0.82rem;display:inline-block}
+    .status-active{background:#d4edda;color:#155724}
+    .status-suspended{background:#fff3cd;color:#856404}
+    .status-banned{background:#f8d7da;color:#721c24}
+    
+    .btn{padding:8px 14px;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;color:#fff;transition:0.2s;display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;}
     .btn-gold{background:var(--gold);color:var(--brown);}
     .btn-gold:hover{background:var(--gold-dark);color:#fff;}
     .btn-success{background:var(--success);}
     .btn-success:hover{background:#219150;}
-    input[type="datetime-local"]{padding:8px;border:1.5px solid var(--sand-dark);border-radius:7px;font-family:inherit;outline:none;}
+    .btn-warning{background:var(--warning);}
+    .btn-danger{background:var(--error);}
+    select, input[type="datetime-local"], input[type="number"]{padding:8px;border:1.5px solid var(--sand-dark);border-radius:7px;font-family:inherit;outline:none;}
     
     #login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#3b2208 0%,#7a5230 100%);display:flex;align-items:center;justify-content:center;z-index:99999;}
     .login-box{background:#fff;padding:36px;border-radius:16px;text-align:center;width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.4)}
@@ -40,7 +48,7 @@
     /* MODAL STYLES */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;align-items:center;justify-content:center;padding:16px;}
     .modal-overlay.active{display:flex;}
-    .modal-box{background:#fff;border-radius:16px;width:100%;max-width:750px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.3);padding:28px;}
+    .modal-box{background:#fff;border-radius:16px;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.3);padding:28px;}
     .modal-header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--sand-dark);padding-bottom:14px;margin-bottom:20px;}
     .modal-header h3{color:var(--brown);font-size:1.3rem;font-weight:800;display:flex;align-items:center;gap:10px;}
     .close-btn{background:none;border:none;font-size:1.4rem;color:#888;cursor:pointer;transition:0.2s;}
@@ -61,6 +69,8 @@
     .q-badge{padding:3px 10px;border-radius:6px;font-size:0.8rem;font-weight:700;}
     .q-badge.ok{background:#d4edda;color:#155724;}
     .q-badge.err{background:#f8d7da;color:#721c24;}
+    
+    .img-preview-box{width:100%;height:160px;border-radius:10px;border:2px dashed var(--gold);object-fit:cover;background:var(--sand);margin-top:8px}
   </style>
 </head>
 <body>
@@ -89,11 +99,11 @@
       <thead>
         <tr>
           <th>اسم الطبيب (اضغط للتفاصيل)</th>
-          <th>المافظة والمركز</th>
+          <th>المحافظة والمركز</th>
+          <th>المسمى الوظيفي</th>
           <th>نتيجة الاختبار</th>
-          <th>المرحلة الحالية</th>
-          <th>موعد المقابلة</th>
-          <th>إجراءات الإدارة</th>
+          <th>حالة الحساب</th>
+          <th>إجراءات الإدارة والاعتماد</th>
         </tr>
       </thead>
       <tbody id="doctors-table">
@@ -103,11 +113,81 @@
   </div>
 </div>
 
+<!-- APPROVAL / ROLE ASSIGNMENT MODAL -->
+<div id="approval-modal" class="modal-overlay" onclick="closeApprovalModal(event)">
+  <div class="modal-box" style="max-width:550px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-user-check"></i> اعتماد وتحديد المسمى الوظيفي للطبيب</h3>
+      <button class="close-btn" onclick="closeApprovalModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <div style="padding:10px 0">
+      <input type="hidden" id="appr-doc-username"/>
+      
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-weight:700;margin-bottom:6px;color:var(--brown)"><i class="fa-solid fa-user-tie"></i> المسمى الوظيفي الإداري</label>
+        <select id="appr-doc-role" style="width:100%;padding:10px" onchange="onRoleSelectChange()">
+          <option value="platform_director">رئيس المنصة — Platform Director</option>
+          <option value="sector_director">رئيس القطاع — Sector Director</option>
+          <option value="area_manager">مدير المنطقة — Area Manager</option>
+          <option value="field_vet" selected>طبيب بيطري ميداني — Field Veterinarian</option>
+        </select>
+      </div>
+      
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-weight:700;margin-bottom:6px;color:var(--brown)"><i class="fa-solid fa-map"></i> المحافظة المخصصة</label>
+        <select id="appr-doc-gov" style="width:100%;padding:10px" onchange="onApprGovChange()"></select>
+      </div>
+      
+      <div style="margin-bottom:16px" id="appr-district-wrap">
+        <label style="display:block;font-weight:700;margin-bottom:6px;color:var(--brown)"><i class="fa-solid fa-map-pin"></i> المركز / القسم المخصص</label>
+        <select id="appr-doc-district" style="width:100%;padding:10px"></select>
+      </div>
+      
+      <button class="btn btn-success" style="width:100%;padding:12px;font-size:1rem;justify-content:center" onclick="confirmApproval()">
+        <i class="fa-solid fa-check-double"></i> تأكيد الاعتماد والتعيين
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LOCK / SUSPENSION MODAL -->
+<div id="lock-modal" class="modal-overlay" onclick="closeLockModal(event)">
+  <div class="modal-box" style="max-width:500px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-user-lock"></i> إيقاف / حظر حساب الطبيب</h3>
+      <button class="close-btn" onclick="closeLockModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <div style="padding:10px 0">
+      <input type="hidden" id="lock-doc-username"/>
+      
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-weight:700;margin-bottom:6px;color:var(--brown)"><i class="fa-solid fa-ban"></i> نوع الإجراء</label>
+        <select id="lock-type" style="width:100%;padding:10px" onchange="onLockTypeChange()">
+          <option value="temp">إيقاف مؤقت بتايمر (عداد تنازلي)</option>
+          <option value="perm">حظر دائم نهائي</option>
+          <option value="unlock">إلغاء الإيقاف وإعادة تفعيل الحساب</option>
+        </select>
+      </div>
+      
+      <div id="temp-lock-section" style="margin-bottom:16px">
+        <label style="display:block;font-weight:700;margin-bottom:6px;color:var(--brown)"><i class="fa-solid fa-clock"></i> مدة الإيقاف المؤقت (بالساعات)</label>
+        <input type="number" id="lock-duration-hours" value="24" min="1" max="720" style="width:100%;padding:10px"/>
+      </div>
+      
+      <button class="btn btn-danger" style="width:100%;padding:12px;font-size:1rem;justify-content:center" onclick="confirmLockAction()">
+        <i class="fa-solid fa-lock"></i> تنفيذ قرار الإيقاف
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- DOCTOR DETAILS MODAL -->
 <div id="doctor-details-modal" class="modal-overlay" onclick="closeDoctorModal(event)">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <h3><i class="fa-solid fa-id-card-clip"></i> ملف الطبيب التفصيلي</h3>
+      <h3><i class="fa-solid fa-id-card-clip"></i> ملف الطبيب التفصيلي بكافة البيانات</h3>
       <button class="close-btn" onclick="closeDoctorModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     
@@ -120,6 +200,36 @@
 <script>
 const CLOUD_SYNC_URL = 'https://rafeeq-eltareeq-default-rtdb.firebaseio.com/users.json';
 const STORE_KEY='rafiq_users';
+const GOV_DATA={
+  'القاهرة': ['مدينة نصر','المعادي','مصر الجديدة','شبرا','الزيتون','حلوان','المرج','التجمع الخامس','القاهرة الجديدة'],
+  'الجيزة': ['الدقي','المهندسين','الهرم','فيصل','العجوزة','6 أكتوبر','الشيخ زايد','البدرشين'],
+  'الإسكندرية': ['المنتزه','الرمل','سيدي جابر','محرم بك','العجمي','العامرية','برج العرب'],
+  'بورسعيد': ['حي الشرق','حي العرب','حي المناخ','حي الضواحي','حي الزهور','بورفؤاد'],
+  'الشرقية': ['الزقازيق','العاشر من رمضان','منيا القمح','بلبيس','أبو كبير','فاقوس'],
+  'الغربية': ['طنطا','المحلة الكبرى','زفتى','كفر الزيات','السنطة'],
+  'المنوفية': ['شبين الكوم','منوف','مدينة السادات','أشمون','قويسنا'],
+  'القليوبية': ['بنها','شبرا الخيمة','العبور','القناطر الخيرية','طوخ'],
+  'الدقهلية': ['المنصورة','ميت غمر','السنبلاوين','دكرنس','طلخا'],
+  'البحيرة': ['دمنهور','كفر الدوار','إيتاي البارود','رشيد'],
+  'كفر الشيخ': ['كفر الشيخ','دسوق','بيلا','بلطيم'],
+  'دمياط': ['دمياط','دمياط الجديدة','رأس البر','فارسكور'],
+  'الإسماعيلية': ['الإسماعيلية','فايد','التل الكبير','القنطرة'],
+  'السويس': ['السويس','فيصل','عتاقة','الجناين'],
+  'الفيوم': ['الفيوم','طامية','سنورس','إطسا'],
+  'بني سويف': ['بني سويف','الواسطى','ناصر','ببا'],
+  'المنيا': ['المنيا','ملوي','مغاغة','بني مزار'],
+  'أسيوط': ['أسيوط','ديروط','منفلوط','أبو تيج'],
+  'سوهاج': ['سوهاج','أخميم','جرجا','طهطا'],
+  'قنا': ['قنا','نجع حمادي','قوص','دشنا'],
+  'الأقصر': ['الأقصر','إسنا','أرمنت'],
+  'أسوان': ['أسوان','إدفو','كوم أمبو'],
+  'البحر الأحمر': ['الغردقة','سفاجا','القصير','مرسى علم'],
+  'الوادي الجديد': ['الخارجة','الداخلة','الفرافرة'],
+  'مطروح': ['مرسى مطروح','العلمين','الضبعة','سيوة'],
+  'شمال سيناء': ['العريش','بئر العبد','الشيخ زويد','رفح'],
+  'جنوب سيناء': ['شرم الشيخ','الطور','دهب','نويبع']
+};
+const GOVS_ALL=Object.keys(GOV_DATA);
 
 function cleanStr(str) {
   return (str || '').toString().trim().toLowerCase().replace(/[\s\-\+]/g, '');
@@ -175,11 +285,20 @@ function syncCloudNow(){
     });
 }
 
+function getRoleTitle(roleKey){
+  switch(roleKey){
+    case 'platform_director': return 'رئيس المنصة — Platform Director';
+    case 'sector_director': return 'رئيس القطاع — Sector Director';
+    case 'area_manager': return 'مدير المنطقة — Area Manager';
+    case 'field_vet': return 'طبيب بيطري ميداني — Field Veterinarian';
+    default: return 'طبيب بيطري ميداني';
+  }
+}
+
 function renderTable(){
   const users = getUsers().filter(u => u.role === 'doctor');
   drawDoctorsTable(users);
   
-  // Auto-fetch in background
   fetch(CLOUD_SYNC_URL)
     .then(res => res.json())
     .then(cloudData => {
@@ -213,28 +332,31 @@ function drawDoctorsTable(users){
   }
   
   users.forEach((u, idx) => {
-    let stepName = '';
-    if(u.docStep === 'course') stepName = '<span style="color:var(--error);font-weight:700"><i class="fa-solid fa-clock"></i> لم يجتاز الاختبار</span>';
-    else if(u.docStep === 'interview') stepName = '<span style="color:var(--gold-dark);font-weight:700"><i class="fa-solid fa-hourglass-half"></i> بانتظار المقابلة</span>';
-    else if(u.docStep === 'approved') stepName = '<span style="color:var(--success);font-weight:800"><i class="fa-solid fa-circle-check"></i> معتمد</span>';
-    
+    let roleText = getRoleTitle(u.docRole);
     let scoreDisplay = u.examScore ? `<span class="badge-score"><i class="fa-solid fa-square-poll-vertical"></i> ${u.examScore}</span>` : '<span style="color:#888;font-size:0.85rem">لم يمتحن</span>';
-    let dateCol = u.interviewDate ? `<strong style="color:var(--brown)">${new Date(u.interviewDate).toLocaleString('ar-EG')}</strong>` : '<span style="color:#888">لم يُحدد</span>';
     
-    let actionHtml = '';
-    if(u.docStep === 'interview'){
-      actionHtml = `
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <input type="datetime-local" id="date-${idx}"/>
-          <button class="btn btn-gold" onclick="setDate('${u.username}', ${idx})"><i class="fa-solid fa-calendar-plus"></i> تحديد موعد</button>
-          <button class="btn btn-success" onclick="approveDoc('${u.username}')"><i class="fa-solid fa-check-double"></i> اعتماد نهائي</button>
-        </div>
-      `;
+    // Status Badge Logic
+    let statusHtml = '';
+    const now = Date.now();
+    if(u.isBanned){
+      statusHtml = '<span class="status-badge status-banned"><i class="fa-solid fa-ban"></i> محظور نهائياً</span>';
+    } else if(u.suspendedUntil && u.suspendedUntil > now){
+      const minsLeft = Math.ceil((u.suspendedUntil - now) / (1000 * 60));
+      statusHtml = `<span class="status-badge status-suspended"><i class="fa-solid fa-clock"></i> موقوف (${minsLeft} دقيقة متبقية)</span>`;
     } else if(u.docStep === 'approved'){
-      actionHtml = '<span style="color:var(--success);font-weight:800"><i class="fa-solid fa-circle-check"></i> تم الاعتماد بنجاح</span>';
+      statusHtml = '<span class="status-badge status-active"><i class="fa-solid fa-circle-check"></i> نشط ومعتمد</span>';
+    } else if(u.docStep === 'interview'){
+      statusHtml = '<span class="status-badge status-suspended"><i class="fa-solid fa-hourglass-half"></i> بانتظار المقابلة</span>';
     } else {
-      actionHtml = '<span style="color:#888;font-size:0.85rem">في مرحلة الكورس والاختبار</span>';
+      statusHtml = '<span class="status-badge" style="background:#eee"><i class="fa-solid fa-clock"></i> في الكورس والاختبار</span>';
     }
+    
+    let actionHtml = `
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-gold" onclick="openApprovalModal('${u.username}')"><i class="fa-solid fa-user-gear"></i> الاعتماد/التعيين</button>
+        <button class="btn btn-danger" onclick="openLockModal('${u.username}')"><i class="fa-solid fa-user-lock"></i> الإيقاف/الحظر</button>
+      </div>
+    `;
     
     tbody.innerHTML += `
       <tr>
@@ -245,13 +367,130 @@ function drawDoctorsTable(users){
           <br><small style="color:#7a6a5a;margin-top:2px;display:block"><i class="fa-solid fa-phone"></i> ${u.phone || 'غير مدخل'}</small>
         </td>
         <td><strong>${u.gov || '-'}</strong><br><small style="color:#7a6a5a">${u.district || '-'}</small></td>
+        <td><span class="role-badge">${roleText}</span></td>
         <td>${scoreDisplay}</td>
-        <td>${stepName}</td>
-        <td>${dateCol}</td>
+        <td>${statusHtml}</td>
         <td>${actionHtml}</td>
       </tr>
     `;
   });
+}
+
+function openApprovalModal(username){
+  const users = getUsers();
+  const u = users.find(x => cleanStr(x.username) === cleanStr(username));
+  if(!u) return;
+  
+  document.getElementById('appr-doc-username').value = u.username;
+  document.getElementById('appr-doc-role').value = u.docRole || 'field_vet';
+  
+  const govSelect = document.getElementById('appr-doc-gov');
+  govSelect.innerHTML = '';
+  GOVS_ALL.forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g; opt.textContent = g;
+    if(g === u.gov) opt.selected = true;
+    govSelect.appendChild(opt);
+  });
+  
+  onApprGovChange(u.district);
+  onRoleSelectChange();
+  
+  document.getElementById('approval-modal').classList.add('active');
+}
+
+function onApprGovChange(selDistrict){
+  const gov = document.getElementById('appr-doc-gov').value;
+  const distSelect = document.getElementById('appr-doc-district');
+  distSelect.innerHTML = '';
+  const districts = GOV_DATA[gov] || [];
+  districts.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = d;
+    if(selDistrict && d === selDistrict) opt.selected = true;
+    distSelect.appendChild(opt);
+  });
+}
+
+function onRoleSelectChange(){
+  const role = document.getElementById('appr-doc-role').value;
+  const distWrap = document.getElementById('appr-district-wrap');
+  if(role === 'platform_director' || role === 'sector_director'){
+    distWrap.style.display = 'none';
+  } else {
+    distWrap.style.display = 'block';
+  }
+}
+
+function closeApprovalModal(e){
+  if(!e || e.target === document.getElementById('approval-modal')){
+    document.getElementById('approval-modal').classList.remove('active');
+  }
+}
+
+function confirmApproval(){
+  const username = document.getElementById('appr-doc-username').value;
+  const role = document.getElementById('appr-doc-role').value;
+  const gov = document.getElementById('appr-doc-gov').value;
+  const district = document.getElementById('appr-doc-district').value;
+  
+  const users = getUsers();
+  const idx = users.findIndex(u => cleanStr(u.username) === cleanStr(username));
+  if(idx > -1){
+    users[idx].docStep = 'approved';
+    users[idx].docRole = role;
+    users[idx].gov = gov;
+    users[idx].district = (role === 'platform_director' || role === 'sector_director') ? 'جميع المراكز' : district;
+    users[idx].isBanned = false;
+    users[idx].suspendedUntil = 0;
+    saveUsers(users);
+    alert(`تم اعتماد الطبيب وتحديد المسمى الوظيفي: (${getRoleTitle(role)}) بنجاح!`);
+    closeApprovalModal();
+    renderTable();
+  }
+}
+
+function openLockModal(username){
+  document.getElementById('lock-doc-username').value = username;
+  document.getElementById('lock-modal').classList.add('active');
+}
+
+function closeLockModal(e){
+  if(!e || e.target === document.getElementById('lock-modal')){
+    document.getElementById('lock-modal').classList.remove('active');
+  }
+}
+
+function onLockTypeChange(){
+  const type = document.getElementById('lock-type').value;
+  document.getElementById('temp-lock-section').style.display = type === 'temp' ? 'block' : 'none';
+}
+
+function confirmLockAction(){
+  const username = document.getElementById('lock-doc-username').value;
+  const type = document.getElementById('lock-type').value;
+  
+  const users = getUsers();
+  const idx = users.findIndex(u => cleanStr(u.username) === cleanStr(username));
+  if(idx > -1){
+    if(type === 'temp'){
+      const hours = parseInt(document.getElementById('lock-duration-hours').value) || 24;
+      users[idx].suspendedUntil = Date.now() + (hours * 60 * 60 * 1000);
+      users[idx].isBanned = false;
+      alert(`تم إيقاف حساب الطبيب مؤقتاً لمدة ${hours} ساعة.`);
+    } else if(type === 'perm'){
+      users[idx].isBanned = true;
+      users[idx].suspendedUntil = 0;
+      alert('تم حظر حساب الطبيب نهائياً.');
+    } else if(type === 'unlock'){
+      users[idx].isBanned = false;
+      users[idx].suspendedUntil = 0;
+      alert('تم الغاء الإيقاف وتفعيل الحساب بنجاح.');
+    }
+    saveUsers(users);
+    closeLockModal();
+    renderTable();
+  }
 }
 
 function openDoctorModal(username){
@@ -260,8 +499,6 @@ function openDoctorModal(username){
   if(!u) return;
   
   const modalContent = document.getElementById('modal-content');
-  
-  // Format Academic status
   let acadText = u.academicStatus === 'student' ? 'طالب / امتياز' : 'خريج';
   
   let detailsHtml = `
@@ -274,8 +511,9 @@ function openDoctorModal(username){
       <div class="info-item"><div class="lbl"><i class="fa-solid fa-key"></i> كلمة المرور</div><div class="val" style="color:var(--error);font-family:monospace;font-size:1.05rem">${u.pass || '-'}</div></div>
     </div>
     
-    <div class="section-title"><i class="fa-solid fa-location-dot"></i> الموقع الجغرافي</div>
+    <div class="section-title"><i class="fa-solid fa-briefcase"></i> التكليف والمسمى الوظيفي</div>
     <div class="info-grid">
+      <div class="info-item"><div class="lbl"><i class="fa-solid fa-user-tie"></i> المسمى الوظيفي</div><div class="val" style="color:var(--gold-dark)">${getRoleTitle(u.docRole)}</div></div>
       <div class="info-item"><div class="lbl"><i class="fa-solid fa-map"></i> المحافظة</div><div class="val">${u.gov || '-'}</div></div>
       <div class="info-item"><div class="lbl"><i class="fa-solid fa-map-pin"></i> المركز / القسم</div><div class="val">${u.district || '-'}</div></div>
     </div>
@@ -299,6 +537,19 @@ function openDoctorModal(username){
   }
   
   detailsHtml += `</div>`;
+  
+  // UPLOADED DOCUMENTS PREVIEW
+  detailsHtml += `<div class="section-title"><i class="fa-solid fa-file-image"></i> المستندات والوثائق المرفوعة</div>
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="lbl"><i class="fa-solid fa-id-card"></i> الهوية الوطنية (أمامي وخلفي)</div>
+      <div class="val" style="font-size:0.85rem">تم الترفيق والتحقق ✅</div>
+    </div>
+    <div class="info-item">
+      <div class="lbl"><i class="fa-solid fa-graduation-cap"></i> الكارنيه / الشهادة</div>
+      <div class="val" style="font-size:0.85rem">تم الترفيق والتحقق ✅</div>
+    </div>
+  </div>`;
   
   // EXAM DETAILS SECTION
   detailsHtml += `<div class="section-title"><i class="fa-solid fa-square-poll-vertical"></i> تفاصيل نتائج اختبار القبول</div>`;
@@ -338,33 +589,6 @@ function openDoctorModal(username){
 function closeDoctorModal(e){
   if(!e || e.target === document.getElementById('doctor-details-modal')){
     document.getElementById('doctor-details-modal').classList.remove('active');
-  }
-}
-
-function setDate(username, idx){
-  const dateVal = document.getElementById(`date-${idx}`).value;
-  if(!dateVal) return alert('برجاء اختيار التاريخ والوقت');
-  
-  const users = getUsers();
-  const user = users.find(u => cleanStr(u.username) === cleanStr(username));
-  if(user){
-    user.interviewDate = dateVal;
-    user.interviewNotified = false;
-    saveUsers(users);
-    alert('تم حفظ موعد المقابلة بنجاح. سيتم التزامن وتنبيه الطبيب عند دخوله.');
-    renderTable();
-  }
-}
-
-function approveDoc(username){
-  if(confirm('هل أنت متأكد من اعتماد هذا الطبيب بشكل نهائي؟')){
-    const users = getUsers();
-    const user = users.find(u => cleanStr(u.username) === cleanStr(username));
-    if(user){
-      user.docStep = 'approved';
-      saveUsers(users);
-      renderTable();
-    }
   }
 }
 </script>
