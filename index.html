@@ -440,6 +440,10 @@ const GOVS_ALL=Object.keys(GOV_DATA);
 let currentRole=null,currentTab='register';
 let forgotTargetUser = null;
 
+function cleanStr(str) {
+  return (str || '').toString().trim().toLowerCase().replace(/[\s\-\+]/g, '');
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   if(LOGO_SRC){document.getElementById('logo-img').src=LOGO_SRC;document.getElementById('top-logo').src=LOGO_SRC;}
   populateGovs('d-gov');populateGovs('c-gov');
@@ -487,18 +491,19 @@ function showForgotPassword(){
 
 function verifyForgotUser(){
   clearErrors();
-  const query = v('forgot-search-id').toLowerCase();
+  const rawQuery = v('forgot-search-id');
+  const query = cleanStr(rawQuery);
   if(!query){ setErr('err-forgot-search','برجاء إدخال بيانات الحساب'); return; }
   
   const users = getUsers();
   const target = users.find(u => 
-    (u.username && u.username.toLowerCase() === query) ||
-    (u.phone && u.phone === query) ||
-    (u.email && u.email.toLowerCase() === query)
+    cleanStr(u.username) === query ||
+    cleanStr(u.phone) === query ||
+    cleanStr(u.email) === query
   );
   
   if(!target){
-    setErr('err-forgot-search','لم يتم العثور على حساب بهذه البيانات!');
+    setErr('err-forgot-search','لم يتم العثور على حساب بهذه البيانات على هذا الجهاز! إذا كنت قد سجلت من جهاز آخر يرجى إنشاء الحساب أولاً على هذا المتصفح.');
     return;
   }
   
@@ -517,7 +522,7 @@ function resetUserPassword(){
   if(p1 !== p2){ setErr('err-forgot-new-pass2','كلمتا المرور غير متطابقتين'); return; }
   
   const users = getUsers();
-  const idx = users.findIndex(u => u.username === forgotTargetUser.username);
+  const idx = users.findIndex(u => cleanStr(u.username) === cleanStr(forgotTargetUser.username));
   if(idx > -1){
     users[idx].pass = p1;
     saveUsers(users);
@@ -601,7 +606,7 @@ function submitRegister(){
     }
     if(!valid)return;
     const users=getUsers();
-    if(users.find(u=>u.username.toLowerCase()===username.toLowerCase() || (u.email && u.email.toLowerCase()===email.toLowerCase()))){
+    if(users.find(u=>cleanStr(u.username)===cleanStr(username) || (u.email && cleanStr(u.email)===cleanStr(email)))){
       setErr('err-d-username','اسم المستخدم أو البريد مسجل بالفعل');
       return;
     }
@@ -613,7 +618,7 @@ function submitRegister(){
     };
     users.push(user);saveUsers(users);saveSession(user);
     closeAuth();enterPlatform(user);
-    showAlert('تم إنشاء حسابك بنجاح! يمكنك الآن مشاهدة الكورس والبدء في الاختبار.');
+    showAlert('تم إنشاء حسابك بنجاح على هذا المتصفح! يمكنك الآن مشاهدة الكورس والبدء في الاختبار.');
   } else {
     const username=v('c-username'),email=v('c-email'),phone=v('c-phone'),dob=v('c-dob');
     const pass=v('c-pass'),pass2=v('c-pass2'),gov=v('c-gov'),district=v('c-district');
@@ -628,7 +633,7 @@ function submitRegister(){
     
     if(!valid)return;
     const users=getUsers();
-    if(users.find(u=>u.username.toLowerCase()===username.toLowerCase())){
+    if(users.find(u=>cleanStr(u.username)===cleanStr(username))){
       setErr('err-c-username','الاسم مستخدم بالفعل');
       return;
     }
@@ -639,23 +644,23 @@ function submitRegister(){
 
 function submitLogin(){
   clearErrors();
-  const loginId=v('login-id').toLowerCase();
-  const pass=v('login-pass');
+  const loginId = cleanStr(v('login-id'));
+  const pass = v('login-pass');
   if(!loginId){setErr('err-login-id','أدخل اسم المستخدم أو الموبايل أو البريد');return;}
   if(!pass){setErr('err-login-pass','أدخل كلمة المرور');return;}
   
   const users=getUsers();
-  // Flexible lookup by username, phone, or email
+  // Flexible lookup by username, phone, or email with string cleaning
   const user=users.find(u=>
     (
-      (u.username && u.username.toLowerCase() === loginId) ||
-      (u.phone && u.phone === loginId) ||
-      (u.email && u.email.toLowerCase() === loginId)
+      cleanStr(u.username) === loginId ||
+      cleanStr(u.phone) === loginId ||
+      cleanStr(u.email) === loginId
     ) && u.pass === pass
   );
   
   if(!user){
-    setErr('err-login-pass','البيانات غير صحيحة! تأكد من اسم المستخدم وكلمة المرور');
+    setErr('err-login-pass','البيانات غير صحيحة أو لم يتم تسجيل هذا الحساب على هذا الجهاز بعد!');
     return;
   }
   
@@ -666,7 +671,7 @@ function submitLogin(){
 
 function refreshUser(user){
   const users=getUsers();
-  const fresh = users.find(u=>u.username.toLowerCase()===user.username.toLowerCase());
+  const fresh = users.find(u=>cleanStr(u.username)===cleanStr(user.username));
   if(fresh) { saveSession(fresh); return fresh; }
   return user;
 }
@@ -689,7 +694,7 @@ function enterPlatform(user){
     if(user.docStep==='interview' && user.interviewDate && !user.interviewNotified){
       showAlert(`تم تحديد موعد المقابلة الخاص بك: ${new Date(user.interviewDate).toLocaleString('ar-EG')}`);
       const users = getUsers();
-      const idx = users.findIndex(u=>u.username.toLowerCase()===user.username.toLowerCase());
+      const idx = users.findIndex(u=>cleanStr(u.username)===cleanStr(user.username));
       if(idx>-1) { users[idx].interviewNotified = true; saveUsers(users); saveSession(users[idx]); }
     }
     
@@ -786,7 +791,7 @@ function submitExam(){
   document.getElementById('exam-modal').style.display='none';
   const u = getSession();
   const users = getUsers();
-  const idx = users.findIndex(x=>x.username.toLowerCase()===u.username.toLowerCase());
+  const idx = users.findIndex(x=>cleanStr(x.username)===cleanStr(u.username));
   if(idx>-1) { 
     users[idx].docStep = 'interview'; 
     users[idx].examScore = scoreStr;
