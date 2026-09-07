@@ -133,7 +133,7 @@
     <div style="width:40px;height:4px;background:var(--sand-dark);border-radius:4px;margin:0 auto 18px;display:none" id="modal-handle"></div>
     <h2 id="auth-title"></h2>
     <p class="sub" id="auth-sub"></p>
-    <div class="auth-tabs">
+    <div class="auth-tabs" id="auth-tab-bar">
       <button class="auth-tab active" id="tab-register" onclick="switchTab('register')"><i class="fa-solid fa-user-plus"></i> إنشاء حساب</button>
       <button class="auth-tab" id="tab-login" onclick="switchTab('login')"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
     </div>
@@ -226,9 +226,54 @@
     </div>
     
     <div id="login-form" style="display:none">
-      <div class="form-group"><label><i class="fa-solid fa-at"></i> رقم الموبايل أو البريد الإلكتروني</label><input type="text" id="login-id" placeholder="01XXXXXXXXX أو example@email.com"/><div class="field-err" id="err-login-id"></div></div>
-      <div class="form-group"><label><i class="fa-solid fa-lock"></i> كلمة المرور</label><input type="password" id="login-pass" placeholder="أدخل كلمة المرور"/><div class="field-err" id="err-login-pass"></div></div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-user"></i> اسم المستخدم / رقم الموبايل / البريد الإلكتروني</label>
+        <input type="text" id="login-id" placeholder="اسم المستخدم أو 01XXXXXXXXX أو example@email.com"/>
+        <div class="field-err" id="err-login-id"></div>
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-lock"></i> كلمة المرور</label>
+        <input type="password" id="login-pass" placeholder="أدخل كلمة المرور"/>
+        <div class="field-err" id="err-login-pass"></div>
+      </div>
+      <div style="text-align:left;margin:-4px 0 14px">
+        <span style="color:var(--gold-dark);font-size:0.88rem;cursor:pointer;font-weight:700;text-decoration:underline" onclick="showForgotPassword()">
+          <i class="fa-solid fa-key"></i> هل نسيت كلمة السر؟
+        </span>
+      </div>
       <button class="btn-submit" onclick="submitLogin()"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
+    </div>
+    
+    <!-- FORGOT PASSWORD FORM -->
+    <div id="forgot-form" style="display:none">
+      <div style="background:rgba(200,169,110,0.12);padding:14px;border-radius:10px;margin-bottom:16px;border-right:4px solid var(--gold)">
+        <h4 style="color:var(--brown);font-weight:800;margin-bottom:4px"><i class="fa-solid fa-shield-halved"></i> استعادة كلمة المرور</h4>
+        <p style="font-size:0.85rem;color:var(--text-muted)">أدخل اسم المستخدم أو رقم الموبايل أو البريد المرتبط بحسابك لتعيين كلمة مرور جديدة.</p>
+      </div>
+      <div id="forgot-step-1">
+        <div class="form-group">
+          <label><i class="fa-solid fa-magnifying-glass"></i> حسابك (اسم المستخدم / الموبايل / البريد)</label>
+          <input type="text" id="forgot-search-id" placeholder="أدخل بيانات حسابك"/>
+          <div class="field-err" id="err-forgot-search"></div>
+        </div>
+        <button class="btn-submit" onclick="verifyForgotUser()"><i class="fa-solid fa-magnifying-glass"></i> البحث عن الحساب</button>
+      </div>
+      <div id="forgot-step-2" style="display:none">
+        <div style="background:#e8f4ec;padding:10px 14px;border-radius:8px;margin-bottom:14px;color:var(--success);font-weight:700;font-size:0.9rem">
+          <i class="fa-solid fa-user-check"></i> تم العثور على حساب: <span id="forgot-found-username"></span>
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-lock"></i> كلمة المرور الجديدة</label>
+          <input type="password" id="forgot-new-pass" placeholder="6 أحرف على الأقل"/>
+          <div class="field-err" id="err-forgot-new-pass"></div>
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-lock"></i> تأكيد كلمة المرور الجديدة</label>
+          <input type="password" id="forgot-new-pass2" placeholder="أعد إدخال كلمة المرور"/>
+          <div class="field-err" id="err-forgot-new-pass2"></div>
+        </div>
+        <button class="btn-submit" onclick="resetUserPassword()"><i class="fa-solid fa-key"></i> حفظ كلمة المرور الجديدة</button>
+      </div>
     </div>
     
     <span class="back-link" onclick="closeAuth()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</span>
@@ -393,6 +438,7 @@ const GOV_DATA={
 };
 const GOVS_ALL=Object.keys(GOV_DATA);
 let currentRole=null,currentTab='register';
+let forgotTargetUser = null;
 
 document.addEventListener('DOMContentLoaded',()=>{
   if(LOGO_SRC){document.getElementById('logo-img').src=LOGO_SRC;document.getElementById('top-logo').src=LOGO_SRC;}
@@ -419,11 +465,65 @@ window.addEventListener('resize',checkMobileHandle);
 
 function switchTab(tab){
   currentTab=tab;
+  document.getElementById('auth-tab-bar').style.display='';
   document.getElementById('register-form').style.display=tab==='register'?'':'none';
   document.getElementById('login-form').style.display=tab==='login'?'':'none';
+  document.getElementById('forgot-form').style.display='none';
   document.getElementById('tab-register').classList.toggle('active',tab==='register');
   document.getElementById('tab-login').classList.toggle('active',tab==='login');
   clearErrors();
+}
+
+function showForgotPassword(){
+  document.getElementById('auth-tab-bar').style.display='none';
+  document.getElementById('register-form').style.display='none';
+  document.getElementById('login-form').style.display='none';
+  document.getElementById('forgot-form').style.display='block';
+  document.getElementById('forgot-step-1').style.display='block';
+  document.getElementById('forgot-step-2').style.display='none';
+  forgotTargetUser = null;
+  clearErrors();
+}
+
+function verifyForgotUser(){
+  clearErrors();
+  const query = v('forgot-search-id').toLowerCase();
+  if(!query){ setErr('err-forgot-search','برجاء إدخال بيانات الحساب'); return; }
+  
+  const users = getUsers();
+  const target = users.find(u => 
+    (u.username && u.username.toLowerCase() === query) ||
+    (u.phone && u.phone === query) ||
+    (u.email && u.email.toLowerCase() === query)
+  );
+  
+  if(!target){
+    setErr('err-forgot-search','لم يتم العثور على حساب بهذه البيانات!');
+    return;
+  }
+  
+  forgotTargetUser = target;
+  document.getElementById('forgot-found-username').textContent = target.username;
+  document.getElementById('forgot-step-1').style.display='none';
+  document.getElementById('forgot-step-2').style.display='block';
+}
+
+function resetUserPassword(){
+  clearErrors();
+  const p1 = v('forgot-new-pass');
+  const p2 = v('forgot-new-pass2');
+  
+  if(p1.length < 6){ setErr('err-forgot-new-pass','كلمة المرور يجب أن تكون 6 أحرف على الأقل'); return; }
+  if(p1 !== p2){ setErr('err-forgot-new-pass2','كلمتا المرور غير متطابقتين'); return; }
+  
+  const users = getUsers();
+  const idx = users.findIndex(u => u.username === forgotTargetUser.username);
+  if(idx > -1){
+    users[idx].pass = p1;
+    saveUsers(users);
+    showAlert('تم تغيير كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.');
+    switchTab('login');
+  }
 }
 
 function onGovChange(px){
@@ -474,21 +574,17 @@ function submitRegister(){
     const university=v('d-university');
     const statusEl=document.querySelector('input[name="d-status"]:checked');
     const status=statusEl?statusEl.value:'';
-    const idFront=document.getElementById('d-id-front').files[0];
-    const idBack=document.getElementById('d-id-back').files[0];
     
-    if(!username){setErr('err-d-username','مطلوب');valid=false;}
-    if(!email){setErr('err-d-email','مطلوب');valid=false;}
-    if(!phone){setErr('err-d-phone','مطلوب');valid=false;}
-    if(!dob){setErr('err-d-dob','مطلوب');valid=false;}
-    if(pass.length<6){setErr('err-d-pass','6 أحرف على الأقل');valid=false;}
-    if(pass!==pass2){setErr('err-d-pass2','غير متطابق');valid=false;}
-    if(!gov){setErr('err-d-gov','مطلوب');valid=false;}
-    if(gov&&!district){setErr('err-d-district','مطلوب');valid=false;}
-    if(!university){setErr('err-d-university','مطلوب');valid=false;}
-    if(!status){setErr('err-d-status','مطلوب');valid=false;}
-    if(!idFront){setErr('err-d-id-front','مطلوب');valid=false;}
-    if(!idBack){setErr('err-d-id-back','مطلوب');valid=false;}
+    if(!username){setErr('err-d-username','اسم المستخدم مطلوب');valid=false;}
+    if(!email){setErr('err-d-email','البريد الإلكتروني مطلوب');valid=false;}
+    if(!phone){setErr('err-d-phone','رقم الموبايل مطلوب');valid=false;}
+    if(!dob){setErr('err-d-dob','تاريخ الميلاد مطلوب');valid=false;}
+    if(pass.length<6){setErr('err-d-pass','كلمة المرور 6 أحرف على الأقل');valid=false;}
+    if(pass!==pass2){setErr('err-d-pass2','كلمة المرور غير متطابقة');valid=false;}
+    if(!gov){setErr('err-d-gov','المحافظة مطلوبة');valid=false;}
+    if(gov&&!district){setErr('err-d-district','المركز/القسم مطلوب');valid=false;}
+    if(!university){setErr('err-d-university','الجامعة مطلوبة');valid=false;}
+    if(!status){setErr('err-d-status','الوضع الأكاديمي مطلوب');valid=false;}
     
     let academicYear='', academicLevel='', dorm='', gradYear='';
     
@@ -496,16 +592,19 @@ function submitRegister(){
       academicYear=v('d-year'); academicLevel=v('d-level');
       const dormEl=document.querySelector('input[name="d-dorm"]:checked');
       dorm=dormEl?dormEl.value:'';
-      if(!academicYear){setErr('err-d-year','مطلوب');valid=false;}
-      if(!academicLevel){setErr('err-d-level','مطلوب');valid=false;}
+      if(!academicYear){setErr('err-d-year','السنة الدراسية مطلوبة');valid=false;}
+      if(!academicLevel){setErr('err-d-level','المستوى الدراسي مطلوب');valid=false;}
     }
     if(status==='graduate'){
       gradYear=v('d-grad-year');
-      if(!gradYear){setErr('err-d-grad-year','مطلوب');valid=false;}
+      if(!gradYear){setErr('err-d-grad-year','عام التخرج مطلوب');valid=false;}
     }
     if(!valid)return;
     const users=getUsers();
-    if(users.find(u=>u.username===username)){setErr('err-d-username','الاسم مستخدم بالفعل');return;}
+    if(users.find(u=>u.username.toLowerCase()===username.toLowerCase() || (u.email && u.email.toLowerCase()===email.toLowerCase()))){
+      setErr('err-d-username','اسم المستخدم أو البريد مسجل بالفعل');
+      return;
+    }
     
     const user={
       username,email,phone,dob,pass,gov,district,university,academicStatus:status,
@@ -514,15 +613,25 @@ function submitRegister(){
     };
     users.push(user);saveUsers(users);saveSession(user);
     closeAuth();enterPlatform(user);
-    showAlert('تم إنشاء حسابك! انتقل الآن للكورس التعريفي.');
+    showAlert('تم إنشاء حسابك بنجاح! يمكنك الآن مشاهدة الكورس والبدء في الاختبار.');
   } else {
     const username=v('c-username'),email=v('c-email'),phone=v('c-phone'),dob=v('c-dob');
     const pass=v('c-pass'),pass2=v('c-pass2'),gov=v('c-gov'),district=v('c-district');
     const address=document.getElementById('c-address').value.trim();
-    if(!username||!pass||!gov){setErr('err-c-username','أكمل البيانات');valid=false;}
+    
+    if(!username){setErr('err-c-username','اسم المستخدم مطلوب');valid=false;}
+    if(!email){setErr('err-c-email','البريد مطلوب');valid=false;}
+    if(!phone){setErr('err-c-phone','الموبايل مطلوب');valid=false;}
+    if(pass.length<6){setErr('err-c-pass','كلمة المرور 6 أحرف على الأقل');valid=false;}
+    if(pass!==pass2){setErr('err-c-pass2','غير متطابقة');valid=false;}
+    if(!gov){setErr('err-c-gov','المحافظة مطلوبة');valid=false;}
+    
     if(!valid)return;
     const users=getUsers();
-    if(users.find(u=>u.username===username)){setErr('err-c-username','الاسم مستخدم بالفعل');return;}
+    if(users.find(u=>u.username.toLowerCase()===username.toLowerCase())){
+      setErr('err-c-username','الاسم مستخدم بالفعل');
+      return;
+    }
     const user={username,email,phone,dob,pass,gov,district,address,role:'citizen',status:'active',createdAt:Date.now()};
     users.push(user);saveUsers(users);saveSession(user);closeAuth();enterPlatform(user);
   }
@@ -530,18 +639,34 @@ function submitRegister(){
 
 function submitLogin(){
   clearErrors();
-  const loginId=v('login-id'),pass=v('login-pass');
-  if(!loginId){setErr('err-login-id','مطلوب');return;}
-  if(!pass){setErr('err-login-pass','مطلوب');return;}
+  const loginId=v('login-id').toLowerCase();
+  const pass=v('login-pass');
+  if(!loginId){setErr('err-login-id','أدخل اسم المستخدم أو الموبايل أو البريد');return;}
+  if(!pass){setErr('err-login-pass','أدخل كلمة المرور');return;}
+  
   const users=getUsers();
-  const user=users.find(u=>(u.phone===loginId||u.email===loginId)&&u.pass===pass&&u.role===currentRole);
-  if(!user){setErr('err-login-pass','البيانات غير صحيحة');return;}
-  saveSession(user);closeAuth();enterPlatform(user);
+  // Flexible lookup by username, phone, or email
+  const user=users.find(u=>
+    (
+      (u.username && u.username.toLowerCase() === loginId) ||
+      (u.phone && u.phone === loginId) ||
+      (u.email && u.email.toLowerCase() === loginId)
+    ) && u.pass === pass
+  );
+  
+  if(!user){
+    setErr('err-login-pass','البيانات غير صحيحة! تأكد من اسم المستخدم وكلمة المرور');
+    return;
+  }
+  
+  saveSession(user);
+  closeAuth();
+  enterPlatform(user);
 }
 
 function refreshUser(user){
   const users=getUsers();
-  const fresh = users.find(u=>u.username===user.username);
+  const fresh = users.find(u=>u.username.toLowerCase()===user.username.toLowerCase());
   if(fresh) { saveSession(fresh); return fresh; }
   return user;
 }
@@ -564,7 +689,7 @@ function enterPlatform(user){
     if(user.docStep==='interview' && user.interviewDate && !user.interviewNotified){
       showAlert(`تم تحديد موعد المقابلة الخاص بك: ${new Date(user.interviewDate).toLocaleString('ar-EG')}`);
       const users = getUsers();
-      const idx = users.findIndex(u=>u.username===user.username);
+      const idx = users.findIndex(u=>u.username.toLowerCase()===user.username.toLowerCase());
       if(idx>-1) { users[idx].interviewNotified = true; saveUsers(users); saveSession(users[idx]); }
     }
     
@@ -661,7 +786,7 @@ function submitExam(){
   document.getElementById('exam-modal').style.display='none';
   const u = getSession();
   const users = getUsers();
-  const idx = users.findIndex(x=>x.username===u.username);
+  const idx = users.findIndex(x=>x.username.toLowerCase()===u.username.toLowerCase());
   if(idx>-1) { 
     users[idx].docStep = 'interview'; 
     users[idx].examScore = scoreStr;
