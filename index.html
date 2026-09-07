@@ -1,14 +1,17 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>رفيق الطريق</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#c8a96e;--gold-dark:#a07840;--sand:#f5efe6;--sand-dark:#e8dccf;--brown:#5c3d1e;--brown-light:#7a5230;--white:#ffffff;--text:#2d1f0f;--text-muted:#7a6a5a;--error:#c0392b;--shadow:0 4px 24px rgba(92,61,30,0.13);--radius:14px}
-    body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--sand);color:var(--text);min-height:100vh}
+    :root{--gold:#c8a96e;--gold-dark:#a07840;--sand:#f5efe6;--sand-dark:#e8dccf;--brown:#5c3d1e;--brown-light:#7a5230;--white:#ffffff;--text:#2d1f0f;--text-muted:#7a6a5a;--error:#c0392b;--success:#27ae60;--shadow:0 4px 24px rgba(92,61,30,0.13);--radius:14px}
+    body{font-family:"Tajawal","Segoe UI",Tahoma,Arial,sans-serif;background:var(--sand);color:var(--text);min-height:100vh}
     #gateway{position:fixed;inset:0;background:linear-gradient(135deg,#3b2208 0%,#7a5230 50%,#c8a96e 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:32px}
     .logo-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
     .logo-img{width:110px;height:110px;border-radius:50%;border:4px solid var(--gold);object-fit:cover;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,0.35)}
@@ -52,13 +55,14 @@
     .form-divider{display:flex;align-items:center;gap:10px;margin:16px 0 10px}
     .form-divider span{font-size:0.8rem;font-weight:700;color:var(--text-muted);white-space:nowrap}
     .form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:var(--sand-dark)}
+    
     #alert-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:20000;align-items:center;justify-content:center}
     #alert-modal.active{display:flex}
     .alert-box{background:#fff;border-radius:14px;padding:32px 26px;max-width:380px;width:92%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
     .alert-box .alert-icon{font-size:2.2rem;color:var(--gold);margin-bottom:12px}
     .alert-box p{font-size:1rem;color:var(--brown);margin-bottom:22px;line-height:1.75}
     .alert-box button{padding:11px 38px;background:var(--gold);color:#fff;border:none;border-radius:9px;font-size:1rem;font-weight:700;cursor:pointer}
-    .alert-box button:hover{background:var(--gold-dark)}
+    
     #platform{display:none}
     #platform.active{display:block}
     .topbar{background:linear-gradient(90deg,var(--brown) 0%,var(--brown-light) 100%);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
@@ -69,20 +73,54 @@
     .dashboard{max-width:920px;margin:40px auto;padding:0 16px}
     .welcome-card{background:#fff;border-radius:var(--radius);padding:36px;text-align:center;box-shadow:var(--shadow);margin-bottom:28px}
     .welcome-card h1{font-size:1.8rem;color:var(--brown);margin-bottom:10px}
-    .welcome-card p{color:var(--text-muted);font-size:1rem}
     .badge{display:inline-flex;align-items:center;gap:8px;padding:7px 22px;border-radius:20px;font-weight:700;font-size:0.9rem;margin-top:16px}
     .badge.doctor{background:var(--gold);color:var(--brown)}
     .badge.citizen{background:var(--brown);color:#fff}
-    .notice{background:#fff8e1;border:2px solid var(--gold);border-radius:var(--radius);padding:24px 28px;text-align:center;color:var(--brown);font-size:1rem;box-shadow:var(--shadow)}
-    .notice .notice-icon{font-size:2rem;color:var(--gold);margin-bottom:10px}
+    
+    /* Stepper CSS */
+    .stepper-wrapper{display:flex;justify-content:space-between;margin:30px 0 40px;position:relative}
+    .stepper-wrapper::before{content:'';position:absolute;top:18px;left:40px;right:40px;height:3px;background:var(--sand-dark);z-index:1}
+    .stepper-item{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;flex:1}
+    .step-counter{width:40px;height:40px;border-radius:50%;background:var(--sand-dark);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-weight:bold;margin-bottom:10px;border:4px solid #fff;transition:0.3s}
+    .stepper-item.completed .step-counter{background:var(--success);color:#fff}
+    .stepper-item.active .step-counter{background:var(--gold);color:#fff;box-shadow:0 0 0 3px rgba(200,169,110,0.3)}
+    .step-name{font-size:0.85rem;font-weight:700;color:var(--text-muted);text-align:center}
+    .stepper-item.active .step-name,.stepper-item.completed .step-name{color:var(--brown)}
+    
+    /* Flow Cards */
+    .flow-card{background:#fff;border:2px solid var(--gold);border-radius:var(--radius);padding:30px;text-align:center;box-shadow:var(--shadow);display:none}
+    .flow-card.active{display:block}
+    .flow-card h3{color:var(--brown);margin-bottom:15px;font-size:1.4rem}
+    .flow-card p{color:var(--text-muted);line-height:1.6;margin-bottom:20px}
+    .video-placeholder{background:var(--sand);border:2px dashed var(--gold-dark);height:200px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--brown);font-weight:bold;margin-bottom:20px;flex-direction:column;gap:10px;}
+    
+    /* Exam Modal Styling */
+    .exam-box{background:#fff;border-radius:16px;padding:28px;max-width:650px;width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.35);text-align:right;}
+    .exam-q-item{background:var(--sand);padding:16px;border-radius:10px;margin-bottom:16px;border-right:4px solid var(--gold);}
+    .exam-q-title{font-weight:800;color:var(--brown);margin-bottom:12px;font-size:1rem;}
+    .exam-opt{display:flex;align-items:center;gap:10px;padding:8px;border-radius:6px;cursor:pointer;margin-bottom:6px;transition:background 0.2s;}
+    .exam-opt:hover{background:var(--sand-dark);}
+    .exam-opt input[type=radio]{accent-color:var(--gold);width:18px;height:18px;}
+    
     ::-webkit-scrollbar{width:7px}::-webkit-scrollbar-track{background:var(--sand)}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+    
+    @media(max-width:768px){
+      .logo-title{font-size:1.8rem} .gw-btn{padding:14px 32px;font-size:1rem}
+      .auth-modal{padding:24px 18px;border-radius:var(--radius) var(--radius) 0 0;position:fixed;bottom:0;left:0;right:0;width:100%;max-width:100%;max-height:90vh;border-bottom-left-radius:0;border-bottom-right-radius:0}
+      #auth-overlay{align-items:flex-end}
+      .form-group input,.form-group select,.form-group textarea{font-size:16px;padding:12px 13px}
+      .stepper-wrapper::before{left:20px;right:20px}
+      .step-name{font-size:0.75rem}
+    }
   </style>
 </head>
-<body><div id="gateway">
+<body>
+
+<div id="gateway">
   <div class="logo-wrap">
     <img class="logo-img" id="logo-img" src="" alt="رفيق الطريق" onerror="this.style.display='none'"/>
     <div class="logo-title">رفيق الطريق</div>
-    <div class="logo-sub">منصة إدارة الكلاب الضالة في مصر</div>
+    <div class="logo-sub">معاً لبيئة آمنة للإنسان والحيوان</div>
   </div>
   <div class="gw-btns">
     <button class="gw-btn doctor" onclick="openAuth('doctor')"><i class="fa-solid fa-stethoscope"></i> طبيب بيطري</button>
@@ -90,15 +128,18 @@
   </div>
 </div>
 
-<div id="auth-overlay">
-  <div class="auth-modal">
+<div id="auth-overlay" onclick="handleOverlayClick(event)">
+  <div class="auth-modal" onclick="event.stopPropagation()">
+    <div style="width:40px;height:4px;background:var(--sand-dark);border-radius:4px;margin:0 auto 18px;display:none" id="modal-handle"></div>
     <h2 id="auth-title"></h2>
     <p class="sub" id="auth-sub"></p>
     <div class="auth-tabs">
       <button class="auth-tab active" id="tab-register" onclick="switchTab('register')"><i class="fa-solid fa-user-plus"></i> إنشاء حساب</button>
       <button class="auth-tab" id="tab-login" onclick="switchTab('login')"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
     </div>
+    
     <div id="register-form">
+      <!-- DOCTOR FIELDS -->
       <div id="doctor-fields" style="display:none">
         <div class="form-divider"><span><i class="fa-solid fa-circle-info"></i> البيانات الشخصية</span></div>
         <div class="form-group"><label><i class="fa-solid fa-user"></i> اسم المستخدم</label><input type="text" id="d-username" placeholder="أدخل اسم المستخدم"/><div class="field-err" id="err-d-username"></div></div>
@@ -107,33 +148,35 @@
         <div class="form-group"><label><i class="fa-solid fa-calendar-days"></i> تاريخ الميلاد</label><input type="date" id="d-dob"/><div class="field-err" id="err-d-dob"></div></div>
         <div class="form-group"><label><i class="fa-solid fa-lock"></i> كلمة المرور</label><input type="password" id="d-pass" placeholder="6 أحرف على الأقل"/><div class="field-err" id="err-d-pass"></div></div>
         <div class="form-group"><label><i class="fa-solid fa-lock"></i> تأكيد كلمة المرور</label><input type="password" id="d-pass2" placeholder="أعد إدخال كلمة المرور"/><div class="field-err" id="err-d-pass2"></div></div>
+        
         <div class="form-divider"><span><i class="fa-solid fa-location-dot"></i> بيانات الموقع</span></div>
         <div class="form-group"><label><i class="fa-solid fa-map"></i> المحافظة</label><select id="d-gov" onchange="onGovChange('d')"><option value="">-- اختر المحافظة --</option></select><div class="field-err" id="err-d-gov"></div></div>
-        <div class="form-group" id="d-city-wrap" style="display:none"><label><i class="fa-solid fa-city"></i> المدينة</label><select id="d-city" onchange="onCityChange('d')"><option value="">-- اختر المدينة --</option></select><div class="field-err" id="err-d-city"></div></div>
-        <div class="form-group" id="d-district-wrap" style="display:none"><label><i class="fa-solid fa-map-pin"></i> الحي / القسم</label><select id="d-district"><option value="">-- اختر الحي/القسم --</option></select><div class="field-err" id="err-d-district"></div></div>
+        <div class="form-group" id="d-district-wrap" style="display:none"><label><i class="fa-solid fa-map-pin"></i> المركز / القسم</label><select id="d-district"><option value="">-- اختر المركز/القسم --</option></select><div class="field-err" id="err-d-district"></div></div>
+        
         <div class="form-divider"><span><i class="fa-solid fa-graduation-cap"></i> البيانات الأكاديمية</span></div>
         <div class="form-group"><label><i class="fa-solid fa-school"></i> الجامعة</label><input type="text" id="d-university" placeholder="اسم الجامعة"/><div class="field-err" id="err-d-university"></div></div>
         <div class="form-group">
           <label><i class="fa-solid fa-user-graduate"></i> الوضع الأكاديمي</label>
           <div class="radio-group">
-            <label class="radio-option"><input type="radio" name="d-status" value="student" onchange="onAcademicChange()"/> طالب</label>
+            <label class="radio-option"><input type="radio" name="d-status" value="student" onchange="onAcademicChange()"/> طالب / امتياز</label>
             <label class="radio-option"><input type="radio" name="d-status" value="graduate" onchange="onAcademicChange()"/> خريج</label>
           </div>
           <div class="field-err" id="err-d-status"></div>
         </div>
+        
         <div id="student-section" style="display:none">
           <div class="cond-section">
             <div class="cond-title"><i class="fa-solid fa-book-open"></i> بيانات الطالب</div>
-            <div class="form-group"><label><i class="fa-solid fa-layer-group"></i> الفرقة الدراسية</label><select id="d-year"><option value="">-- اختر الفرقة --</option><option>الفرقة الأولى</option><option>الفرقة الثانية</option><option>الفرقة الثالثة</option><option>الفرقة الرابعة</option><option>الفرقة الخامسة</option></select><div class="field-err" id="err-d-year"></div></div>
+            <div class="form-group"><label><i class="fa-solid fa-layer-group"></i> السنة الدراسية</label><select id="d-year"><option value="">-- اختر السنة --</option><option>الفرقة الأولى</option><option>الفرقة الثانية</option><option>الفرقة الثالثة</option><option>الفرقة الرابعة</option><option>الفرقة الخامسة</option><option>سنة الامتياز</option></select><div class="field-err" id="err-d-year"></div></div>
             <div class="form-group"><label><i class="fa-solid fa-chart-bar"></i> المستوى الدراسي</label><select id="d-level"><option value="">-- اختر المستوى --</option><option>ممتاز</option><option>جيد جداً</option><option>جيد</option><option>مقبول</option></select><div class="field-err" id="err-d-level"></div></div>
             <div class="form-group">
               <label><i class="fa-solid fa-id-badge"></i> صورة الكارنيه (الوجه الأمامي)</label>
-              <label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الوجه الأمامي للكارنيه</span><input type="file" accept="image/*" id="d-carneh-front" onchange="previewFile(this,'prev-carneh-front')"/></label>
+              <label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الكارنيه الأمامية</span><input type="file" accept="image/*" id="d-carneh-front" onchange="previewFile(this,'prev-carneh-front')"/></label>
               <img class="file-preview-rect" id="prev-carneh-front"/><div class="field-err" id="err-d-carneh-front"></div>
             </div>
             <div class="form-group">
               <label><i class="fa-solid fa-id-badge"></i> صورة الكارنيه (الخلفية)</label>
-              <label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة خلفية الكارنيه</span><input type="file" accept="image/*" id="d-carneh-back" onchange="previewFile(this,'prev-carneh-back')"/></label>
+              <label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الكارنيه الخلفية</span><input type="file" accept="image/*" id="d-carneh-back" onchange="previewFile(this,'prev-carneh-back')"/></label>
               <img class="file-preview-rect" id="prev-carneh-back"/><div class="field-err" id="err-d-carneh-back"></div>
             </div>
             <div class="form-group">
@@ -146,29 +189,25 @@
             </div>
           </div>
         </div>
+        
         <div id="graduate-section" style="display:none">
           <div class="cond-section">
             <div class="cond-title"><i class="fa-solid fa-scroll"></i> بيانات الخريج</div>
             <div class="form-group"><label><i class="fa-solid fa-calendar-check"></i> عام التخرج</label><input type="number" id="d-grad-year" placeholder="مثال: 2022" min="1990" max="2030"/><div class="field-err" id="err-d-grad-year"></div></div>
             <div class="form-group">
               <label><i class="fa-solid fa-file-certificate"></i> شهادة التخرج</label>
-              <label class="file-upload-wrap"><i class="fa-solid fa-upload upload-icon"></i><span class="upload-text">ارفع صورة شهادة التخرج</span><input type="file" accept="image/*,application/pdf" id="d-cert" onchange="previewFile(this,'prev-cert')"/></label>
+              <label class="file-upload-wrap"><i class="fa-solid fa-upload upload-icon"></i><span class="upload-text">ارفع صورة الشهادة</span><input type="file" accept="image/*,application/pdf" id="d-cert" onchange="previewFile(this,'prev-cert')"/></label>
               <img class="file-preview-rect" id="prev-cert"/><div class="field-err" id="err-d-cert"></div>
             </div>
           </div>
         </div>
+        
         <div class="form-divider"><span><i class="fa-solid fa-id-card"></i> صورة الهوية الوطنية</span></div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-id-card"></i> الهوية الوطنية (الوجه الأمامي)</label>
-          <label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الوجه الأمامي للهوية</span><input type="file" accept="image/*" id="d-id-front" onchange="previewFile(this,'prev-d-id-front')"/></label>
-          <img class="file-preview-rect" id="prev-d-id-front"/><div class="field-err" id="err-d-id-front"></div>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-id-card"></i> الهوية الوطنية (الخلفية)</label>
-          <label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة خلفية الهوية</span><input type="file" accept="image/*" id="d-id-back" onchange="previewFile(this,'prev-d-id-back')"/></label>
-          <img class="file-preview-rect" id="prev-d-id-back"/><div class="field-err" id="err-d-id-back"></div>
-        </div>
+        <div class="form-group"><label><i class="fa-solid fa-id-card"></i> الهوية الوطنية (الوجه الأمامي)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الوجه الأمامي للهوية</span><input type="file" accept="image/*" id="d-id-front" onchange="previewFile(this,'prev-d-id-front')"/></label><img class="file-preview-rect" id="prev-d-id-front"/><div class="field-err" id="err-d-id-front"></div></div>
+        <div class="form-group"><label><i class="fa-solid fa-id-card"></i> الهوية الوطنية (الخلفية)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة خلفية الهوية</span><input type="file" accept="image/*" id="d-id-back" onchange="previewFile(this,'prev-d-id-back')"/></label><img class="file-preview-rect" id="prev-d-id-back"/><div class="field-err" id="err-d-id-back"></div></div>
       </div>
+      
+      <!-- CITIZEN FIELDS -->
       <div id="citizen-fields" style="display:none">
         <div class="form-divider"><span><i class="fa-solid fa-circle-info"></i> البيانات الشخصية</span></div>
         <div class="form-group"><label><i class="fa-solid fa-user"></i> اسم المستخدم</label><input type="text" id="c-username" placeholder="أدخل اسم المستخدم"/><div class="field-err" id="err-c-username"></div></div>
@@ -179,17 +218,19 @@
         <div class="form-group"><label><i class="fa-solid fa-lock"></i> تأكيد كلمة المرور</label><input type="password" id="c-pass2" placeholder="أعد إدخال كلمة المرور"/><div class="field-err" id="err-c-pass2"></div></div>
         <div class="form-divider"><span><i class="fa-solid fa-location-dot"></i> بيانات الموقع</span></div>
         <div class="form-group"><label><i class="fa-solid fa-map"></i> المحافظة</label><select id="c-gov" onchange="onGovChange('c')"><option value="">-- اختر المحافظة --</option></select><div class="field-err" id="err-c-gov"></div></div>
-        <div class="form-group" id="c-city-wrap" style="display:none"><label><i class="fa-solid fa-city"></i> المدينة</label><select id="c-city" onchange="onCityChange('c')"><option value="">-- اختر المدينة --</option></select><div class="field-err" id="err-c-city"></div></div>
-        <div class="form-group" id="c-district-wrap" style="display:none"><label><i class="fa-solid fa-map-pin"></i> الحي / القسم</label><select id="c-district"><option value="">-- اختر الحي/القسم --</option></select><div class="field-err" id="err-c-district"></div></div>
-        <div class="form-group"><label><i class="fa-solid fa-map-location-dot"></i> العنوان التفصيلي</label><textarea id="c-address" placeholder="أدخل عنوانك بالتفصيل (الشارع، رقم المبنى، الدور...)"></textarea><div class="field-err" id="err-c-address"></div></div>
+        <div class="form-group" id="c-district-wrap" style="display:none"><label><i class="fa-solid fa-map-pin"></i> المركز / القسم</label><select id="c-district"><option value="">-- اختر المركز/القسم --</option></select><div class="field-err" id="err-c-district"></div></div>
+        <div class="form-group"><label><i class="fa-solid fa-map-location-dot"></i> العنوان التفصيلي</label><textarea id="c-address" placeholder="أدخل عنوانك بالتفصيل..."></textarea><div class="field-err" id="err-c-address"></div></div>
       </div>
+      
       <button class="btn-submit" onclick="submitRegister()"><i class="fa-solid fa-user-check"></i> إنشاء الحساب</button>
     </div>
+    
     <div id="login-form" style="display:none">
       <div class="form-group"><label><i class="fa-solid fa-at"></i> رقم الموبايل أو البريد الإلكتروني</label><input type="text" id="login-id" placeholder="01XXXXXXXXX أو example@email.com"/><div class="field-err" id="err-login-id"></div></div>
       <div class="form-group"><label><i class="fa-solid fa-lock"></i> كلمة المرور</label><input type="password" id="login-pass" placeholder="أدخل كلمة المرور"/><div class="field-err" id="err-login-pass"></div></div>
       <button class="btn-submit" onclick="submitLogin()"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
     </div>
+    
     <span class="back-link" onclick="closeAuth()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</span>
   </div>
 </div>
@@ -202,32 +243,155 @@
   </div>
 </div>
 
+<!-- REAL INTERACTIVE EXAM MODAL -->
+<div id="exam-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:30000;align-items:center;justify-content:center">
+  <div class="exam-box">
+    <h2 style="color:var(--brown);margin-bottom:12px;font-size:1.4rem;display:flex;align-items:center;gap:10px">
+      <i class="fa-solid fa-file-pen"></i> اختبار القبول للطبيب البيطري
+    </h2>
+    <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:20px">برجاء الإجابة على جميع الأسئلة التالية بدقة لاجتياز اختبار رفيق الطريق.</p>
+    
+    <form id="exam-form">
+      <div class="exam-q-item">
+        <div class="exam-q-title">س1: ما هو التطعيم الأولي الواجب إعطاؤه للكلب عند السيطرة عليه من الشارع؟</div>
+        <label class="exam-opt"><input type="radio" name="q1" value="لقاح السعار (Rabies Vaccine)"/> أ) لقاح السعار (Rabies Vaccine)</label>
+        <label class="exam-opt"><input type="radio" name="q1" value="مضاد حيوي واسع المجال"/> ب) مضاد حيوي واسع المجال</label>
+        <label class="exam-opt"><input type="radio" name="q1" value="مسكن آلام وأعصاب"/> ج) مسكن آلام وأعصاب</label>
+        <label class="exam-opt"><input type="radio" name="q1" value="فيتامينات مقوية للبدن"/> د) فيتامينات مقوية للبدن</label>
+      </div>
+
+      <div class="exam-q-item">
+        <div class="exam-q-title">س2: ما هي الطريقة العالمية الموصى بها إنسانياً وبيئياً للسيطرة على أعداد الكلاب الضالة؟</div>
+        <label class="exam-opt"><input type="radio" name="q2" value="التخلص السلبي أو القتل"/> أ) التخلص السلبي أو القتل</label>
+        <label class="exam-opt"><input type="radio" name="q2" value="تقنية TNVR (الخصي/التعقيم والتلقيح ثم الإطلاق)"/> ب) تقنية TNVR (الخصي/التعقيم والتلقيح ثم الإطلاق)</label>
+        <label class="exam-opt"><input type="radio" name="q2" value="حظر الحركة نهائياً للحيوانات"/> ج) حظر الحركة نهائياً للحيوانات</label>
+        <label class="exam-opt"><input type="radio" name="q2" value="تجميعها في أماكن مغلقة دون رعاية"/> د) تجميعها في أماكن مغلقة دون رعاية</label>
+      </div>
+
+      <div class="exam-q-item">
+        <div class="exam-q-title">س3: ما هو الإجراء الطبي الصحيح للتعامل مع جرح سطحي لحيوان قبل التضميد؟</div>
+        <label class="exam-opt"><input type="radio" name="q3" value="تطهير الجرح بمحلول ملحي معقم ومطهر مناسب"/> أ) تطهير الجرح بمحلول ملحي معقم ومطهر مناسب</label>
+        <label class="exam-opt"><input type="radio" name="q3" value="كي الجرح بالحرارة"/> ب) كي الجرح بالحرارة</label>
+        <label class="exam-opt"><input type="radio" name="q3" value="ترك الجرح بدون غسيل وتضميده مباشرة"/> ج) ترك الجرح بدون غسيل وتضميده مباشرة</label>
+        <label class="exam-opt"><input type="radio" name="q3" value="استخدام مسحوق كيميائي غير مخصص"/> د) استخدام مسحوق كيميائي غير مخصص</label>
+      </div>
+
+      <div class="exam-q-item">
+        <div class="exam-q-title">س4: ما هي العلامة الأولية الرئيسية لمرض السعار لدى الكلاب؟</div>
+        <label class="exam-opt"><input type="radio" name="q4" value="التغير السلوكي الحاد والرهاب من الماء أو الضوء"/> أ) التغير السلوكي الحاد والرهاب من الماء أو الضوء</label>
+        <label class="exam-opt"><input type="radio" name="q4" value="تساقط الشعر السطحي في الظهر"/> ب) تساقط الشعر السطحي في الظهر</label>
+        <label class="exam-opt"><input type="radio" name="q4" value="الإقبال على الطعام بشهية مفرطة"/> ج) الإقبال على الطعام بشهية مفرطة</label>
+        <label class="exam-opt"><input type="radio" name="q4" value="النوم المستمر لساعات طويلة"/> د) النوم المستمر لساعات طويلة</label>
+      </div>
+
+      <div class="exam-q-item">
+        <div class="exam-q-title">س5: ما هو الهدف الأساسي من مشاركتك كطبيب في مبادرة رفيق الطريق؟</div>
+        <label class="exam-opt"><input type="radio" name="q5" value="خلق بيئة آمنة للإنسان والحيوان وتخفيض المخاطر صحياً"/> أ) خلق بيئة آمنة للإنسان والحيوان وتخفيض المخاطر صحياً</label>
+        <label class="exam-opt"><input type="radio" name="q5" value="إجراء الأبحاث الشخصية فقط"/> ب) إجراء الأبحاث الشخصية فقط</label>
+        <label class="exam-opt"><input type="radio" name="q5" value="بيع المستلزمات الطبية"/> ج) بيع المستلزمات الطبية</label>
+        <label class="exam-opt"><input type="radio" name="q5" value="لا يوجد هدف محدد"/> د) لا يوجد هدف محدد</label>
+      </div>
+    </form>
+    
+    <button onclick="submitExam()" class="btn-submit" style="margin-bottom:10px"><i class="fa-solid fa-paper-plane"></i> تسليم الاختبار والإجابات</button>
+    <button onclick="document.getElementById('exam-modal').style.display='none'" style="background:var(--sand-dark);color:var(--text);width:100%;padding:12px;border:none;border-radius:10px;font-weight:700;cursor:pointer">إلغاء</button>
+  </div>
+</div>
+
 <div id="platform">
   <div class="topbar">
     <div class="brand"><img id="top-logo" src="" alt="" onerror="this.style.display='none'"/> رفيق الطريق</div>
     <div class="user-info"><span style="font-size:0.93rem" id="top-username"></span><button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button></div>
   </div>
+  
   <div class="dashboard">
-    <div class="welcome-card"><h1>أهلاً بك في رفيق الطريق</h1><p id="welcome-msg"></p><span class="badge" id="user-badge"></span></div>
-    <div class="notice" id="pending-notice" style="display:none">
-      <div class="notice-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-      <strong>حسابك قيد المراجعة</strong>
-      <p style="margin-top:8px;color:var(--text-muted)">شكراً لتسجيلك. سيتم مراجعة بياناتك والتحقق من هويتك قريباً. ستصلك رسالة على بريدك الإلكتروني عند الموافقة.</p>
+    <div class="welcome-card">
+      <h1 id="welcome-msg"></h1>
+      <span class="badge" id="user-badge"></span>
     </div>
+    
+    <!-- DOCTOR FLOW -->
+    <div id="doctor-flow" style="display:none">
+      
+      <!-- Stepper -->
+      <div class="stepper-wrapper">
+        <div class="stepper-item" id="step-1">
+          <div class="step-counter"><i class="fa-solid fa-check"></i></div>
+          <div class="step-name">إنشاء الحساب</div>
+        </div>
+        <div class="stepper-item" id="step-2">
+          <div class="step-counter">2</div>
+          <div class="step-name">الكورس والاختبار</div>
+        </div>
+        <div class="stepper-item" id="step-3">
+          <div class="step-counter">3</div>
+          <div class="step-name">المقابلة</div>
+        </div>
+        <div class="stepper-item" id="step-4">
+          <div class="step-counter">4</div>
+          <div class="step-name">الاعتماد</div>
+        </div>
+      </div>
+      
+      <!-- Flow Views -->
+      <div id="view-course" class="flow-card">
+        <h3><i class="fa-solid fa-laptop-medical"></i> الكورس التدريبي</h3>
+        <p>برجاء مشاهدة المادة العلمية التالية لاجتياز اختبار القبول.</p>
+        <div class="video-placeholder"><i class="fa-solid fa-play fa-2x"></i><br>مكان إضافة الكورس</div>
+        <button class="btn-submit" onclick="document.getElementById('exam-modal').style.display='flex'">بدء الاختبار الآن</button>
+      </div>
+      
+      <div id="view-interview" class="flow-card">
+        <h3><i class="fa-solid fa-handshake"></i> المقابلة الشخصية</h3>
+        <div id="interview-status-msg" style="font-size:1.2rem;font-weight:bold;color:var(--gold-dark);margin:20px 0;">
+          جاري تحديد موعد المقابلة <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+        <p>سيتم إرسال إشعار لك فور تحديد الإدارة لموعد المقابلة.</p>
+      </div>
+      
+      <div id="view-approved" class="flow-card">
+        <h3><i class="fa-solid fa-certificate"></i> حساب معتمد</h3>
+        <p>تم اعتماد حسابك كطبيب بيطري في منصة رفيق الطريق بنجاح.</p>
+        <button class="btn-submit">لوحة تحكم الطبيب (قريباً)</button>
+      </div>
+      
+    </div>
+    
   </div>
-</div><script>
+</div>
+
+<script>
 const LOGO_SRC='';
 const GOV_DATA={
-  'بورسعيد':{
-    cities:['مدينة بورسعيد','بورفؤاد'],
-    districts:{
-      'مدينة بورسعيد':['حي الزهور','حي المناخ','حي الشرق','حي الضواحي','حي العرب','حي المحروسة','قسم أول بورسعيد','قسم ثاني بورسعيد'],
-      'بورفؤاد':['حي بورفؤاد الأول','حي بورفؤاد الثاني','قسم بورفؤاد']
-    }
-  }
+  'القاهرة': ['مدينة نصر','المعادي','مصر الجديدة','شبرا','الزيتون','حلوان','المرج','التجمع الخامس','القاهرة الجديدة'],
+  'الجيزة': ['الدقي','المهندسين','الهرم','فيصل','العجوزة','6 أكتوبر','الشيخ زايد','البدرشين'],
+  'الإسكندرية': ['المنتزه','الرمل','سيدي جابر','محرم بك','العجمي','العامرية','برج العرب'],
+  'بورسعيد': ['حي الشرق','حي العرب','حي المناخ','حي الضواحي','حي الزهور','بورفؤاد'],
+  'الشرقية': ['الزقازيق','العاشر من رمضان','منيا القمح','بلبيس','أبو كبير','فاقوس'],
+  'الغربية': ['طنطا','المحلة الكبرى','زفتى','كفر الزيات','السنطة'],
+  'المنوفية': ['شبين الكوم','منوف','مدينة السادات','أشمون','قويسنا'],
+  'القليوبية': ['بنها','شبرا الخيمة','العبور','القناطر الخيرية','طوخ'],
+  'الدقهلية': ['المنصورة','ميت غمر','السنبلاوين','دكرنس','طلخا'],
+  'البحيرة': ['دمنهور','كفر الدوار','إيتاي البارود','رشيد'],
+  'كفر الشيخ': ['كفر الشيخ','دسوق','بيلا','بلطيم'],
+  'دمياط': ['دمياط','دمياط الجديدة','رأس البر','فارسكور'],
+  'الإسماعيلية': ['الإسماعيلية','فايد','التل الكبير','القنطرة'],
+  'السويس': ['السويس','فيصل','عتاقة','الجناين'],
+  'الفيوم': ['الفيوم','طامية','سنورس','إطسا'],
+  'بني سويف': ['بني سويف','الواسطى','ناصر','ببا'],
+  'المنيا': ['المنيا','ملوي','مغاغة','بني مزار'],
+  'أسيوط': ['أسيوط','ديروط','منفلوط','أبو تيج'],
+  'سوهاج': ['سوهاج','أخميم','جرجا','طهطا'],
+  'قنا': ['قنا','نجع حمادي','قوص','دشنا'],
+  'الأقصر': ['الأقصر','إسنا','أرمنت'],
+  'أسوان': ['أسوان','إدفو','كوم أمبو'],
+  'البحر الأحمر': ['الغردقة','سفاجا','القصير','مرسى علم'],
+  'الوادي الجديد': ['الخارجة','الداخلة','الفرافرة'],
+  'مطروح': ['مرسى مطروح','العلمين','الضبعة','سيوة'],
+  'شمال سيناء': ['العريش','بئر العبد','الشيخ زويد','رفح'],
+  'جنوب سيناء': ['شرم الشيخ','الطور','دهب','نويبع']
 };
-const GOVS_ALL=['بورسعيد','القاهرة','الجيزة','الإسكندرية','الشرقية','الغربية','المنوفية','القليوبية','الدقهلية','البحيرة','كفر الشيخ','دمياط','الإسماعيلية','السويس','الفيوم','بني سويف','المنيا','أسيوط','سوهاج','قنا','الأقصر','أسوان','البحر الأحمر','الوادي الجديد','مطروح','شمال سيناء','جنوب سيناء'];
-const ACTIVE_GOVS=['بورسعيد'];
+const GOVS_ALL=Object.keys(GOV_DATA);
 let currentRole=null,currentTab='register';
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -235,7 +399,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   populateGovs('d-gov');populateGovs('c-gov');
   const sess=getSession();if(sess)enterPlatform(sess);
 });
+
 function populateGovs(id){const s=document.getElementById(id);GOVS_ALL.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;s.appendChild(o);});}
+
 function openAuth(role){
   currentRole=role;const isDoc=role==='doctor';
   document.getElementById('auth-title').innerHTML=isDoc?'<i class="fa-solid fa-stethoscope"></i> حساب الطبيب البيطري':'<i class="fa-solid fa-house-user"></i> حساب المواطن';
@@ -243,8 +409,14 @@ function openAuth(role){
   document.getElementById('doctor-fields').style.display=isDoc?'':'none';
   document.getElementById('citizen-fields').style.display=!isDoc?'':'none';
   switchTab('register');document.getElementById('auth-overlay').classList.add('active');
+  checkMobileHandle();
 }
+
 function closeAuth(){document.getElementById('auth-overlay').classList.remove('active');}
+function handleOverlayClick(e){if(e.target===document.getElementById('auth-overlay'))closeAuth();}
+function checkMobileHandle(){const h=document.getElementById('modal-handle');if(h)h.style.display=window.innerWidth<=768?'block':'none';}
+window.addEventListener('resize',checkMobileHandle);
+
 function switchTab(tab){
   currentTab=tab;
   document.getElementById('register-form').style.display=tab==='register'?'':'none';
@@ -253,44 +425,39 @@ function switchTab(tab){
   document.getElementById('tab-login').classList.toggle('active',tab==='login');
   clearErrors();
 }
+
 function onGovChange(px){
   const gov=document.getElementById(px+'-gov').value;
-  const cw=document.getElementById(px+'-city-wrap');
   const dw=document.getElementById(px+'-district-wrap');
-  resetSel(px+'-city','-- اختر المدينة --');
-  resetSel(px+'-district','-- اختر الحي/القسم --');
-  cw.style.display='none';dw.style.display='none';
+  resetSel(px+'-district','-- اختر المركز/القسم --');
+  dw.style.display='none';
   if(!gov)return;
-  if(!ACTIVE_GOVS.includes(gov)){
-    showAlert('هذه الخدمة غير متوفرة في محافظتك برجاء الانتظار أو اختر محافظة أخرى');
-    document.getElementById(px+'-gov').value='';return;
+  const data=GOV_DATA[gov];
+  if(data){
+    const ds=document.getElementById(px+'-district');
+    data.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;ds.appendChild(o);});
+    dw.style.display='';
   }
-  const data=GOV_DATA[gov];
-  if(data&&data.cities){const cs=document.getElementById(px+'-city');data.cities.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cs.appendChild(o);});cw.style.display='';}
 }
-function onCityChange(px){
-  const gov=document.getElementById(px+'-gov').value;
-  const city=document.getElementById(px+'-city').value;
-  const dw=document.getElementById(px+'-district-wrap');
-  resetSel(px+'-district','-- اختر الحي/القسم --');dw.style.display='none';
-  if(!city||!gov)return;
-  const data=GOV_DATA[gov];
-  if(data&&data.districts&&data.districts[city]){const ds=document.getElementById(px+'-district');data.districts[city].forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;ds.appendChild(o);});dw.style.display='';}
-}
+
 function resetSel(id,ph){const s=document.getElementById(id);s.innerHTML='';const o=document.createElement('option');o.value='';o.textContent=ph;s.appendChild(o);}
+
 function onAcademicChange(){
   const val=document.querySelector('input[name="d-status"]:checked');
   document.getElementById('student-section').style.display=(val&&val.value==='student')?'':'none';
   document.getElementById('graduate-section').style.display=(val&&val.value==='graduate')?'':'none';
 }
+
 function previewFile(input,pid){
   const p=document.getElementById(pid);
   if(input.files&&input.files[0]&&input.files[0].type.startsWith('image/')){
     const r=new FileReader();r.onload=e=>{p.src=e.target.result;p.style.display='block';};r.readAsDataURL(input.files[0]);
   }
 }
+
 function setErr(id,msg){const e=document.getElementById(id);if(e)e.textContent=msg;}
 function clearErrors(){document.querySelectorAll('.field-err').forEach(e=>e.textContent='');}
+
 const STORE_KEY='rafiq_users';
 function getUsers(){try{return JSON.parse(localStorage.getItem(STORE_KEY))||[];}catch{return[];}}
 function saveUsers(u){localStorage.setItem(STORE_KEY,JSON.stringify(u));}
@@ -303,67 +470,60 @@ function submitRegister(){
   clearErrors();let valid=true;
   if(currentRole==='doctor'){
     const username=v('d-username'),email=v('d-email'),phone=v('d-phone'),dob=v('d-dob');
-    const pass=v('d-pass'),pass2=v('d-pass2'),gov=v('d-gov'),city=v('d-city'),district=v('d-district');
+    const pass=v('d-pass'),pass2=v('d-pass2'),gov=v('d-gov'),district=v('d-district');
     const university=v('d-university');
     const statusEl=document.querySelector('input[name="d-status"]:checked');
     const status=statusEl?statusEl.value:'';
     const idFront=document.getElementById('d-id-front').files[0];
     const idBack=document.getElementById('d-id-back').files[0];
-    if(!username){setErr('err-d-username','اسم المستخدم مطلوب');valid=false;}
-    if(!email||!email.includes('@')){setErr('err-d-email','بريد إلكتروني غير صالح');valid=false;}
-    if(!phone||phone.length<11){setErr('err-d-phone','رقم الموبايل غير صالح');valid=false;}
-    if(!dob){setErr('err-d-dob','تاريخ الميلاد مطلوب');valid=false;}
-    if(pass.length<6){setErr('err-d-pass','كلمة المرور 6 أحرف على الأقل');valid=false;}
-    if(pass!==pass2){setErr('err-d-pass2','كلمتا المرور غير متطابقتين');valid=false;}
-    if(!gov){setErr('err-d-gov','اختر المحافظة');valid=false;}
-    if(gov&&!city){setErr('err-d-city','اختر المدينة');valid=false;}
-    if(gov&&city&&!district){setErr('err-d-district','اختر الحي/القسم');valid=false;}
-    if(!university){setErr('err-d-university','اسم الجامعة مطلوب');valid=false;}
-    if(!status){setErr('err-d-status','اختر طالب أو خريج');valid=false;}
-    if(!idFront){setErr('err-d-id-front','صورة الوجه الأمامي للهوية مطلوبة');valid=false;}
-    if(!idBack){setErr('err-d-id-back','صورة خلفية الهوية مطلوبة');valid=false;}
+    
+    if(!username){setErr('err-d-username','مطلوب');valid=false;}
+    if(!email){setErr('err-d-email','مطلوب');valid=false;}
+    if(!phone){setErr('err-d-phone','مطلوب');valid=false;}
+    if(!dob){setErr('err-d-dob','مطلوب');valid=false;}
+    if(pass.length<6){setErr('err-d-pass','6 أحرف على الأقل');valid=false;}
+    if(pass!==pass2){setErr('err-d-pass2','غير متطابق');valid=false;}
+    if(!gov){setErr('err-d-gov','مطلوب');valid=false;}
+    if(gov&&!district){setErr('err-d-district','مطلوب');valid=false;}
+    if(!university){setErr('err-d-university','مطلوب');valid=false;}
+    if(!status){setErr('err-d-status','مطلوب');valid=false;}
+    if(!idFront){setErr('err-d-id-front','مطلوب');valid=false;}
+    if(!idBack){setErr('err-d-id-back','مطلوب');valid=false;}
+    
+    let academicYear='', academicLevel='', dorm='', gradYear='';
+    
     if(status==='student'){
-      const yr=v('d-year'),lv=v('d-level');
-      const cf=document.getElementById('d-carneh-front').files[0];
-      const cb=document.getElementById('d-carneh-back').files[0];
+      academicYear=v('d-year'); academicLevel=v('d-level');
       const dormEl=document.querySelector('input[name="d-dorm"]:checked');
-      if(!yr){setErr('err-d-year','اختر الفرقة الدراسية');valid=false;}
-      if(!lv){setErr('err-d-level','اختر المستوى الدراسي');valid=false;}
-      if(!cf){setErr('err-d-carneh-front','صورة الوجه الأمامي للكارنيه مطلوبة');valid=false;}
-      if(!cb){setErr('err-d-carneh-back','صورة خلفية الكارنيه مطلوبة');valid=false;}
-      if(!dormEl){setErr('err-d-dorm','الرجاء الإجابة عن السكن الجامعي');valid=false;}
+      dorm=dormEl?dormEl.value:'';
+      if(!academicYear){setErr('err-d-year','مطلوب');valid=false;}
+      if(!academicLevel){setErr('err-d-level','مطلوب');valid=false;}
     }
     if(status==='graduate'){
-      const gy=v('d-grad-year');
-      const ct=document.getElementById('d-cert').files[0];
-      if(!gy){setErr('err-d-grad-year','عام التخرج مطلوب');valid=false;}
-      if(!ct){setErr('err-d-cert','شهادة التخرج مطلوبة');valid=false;}
+      gradYear=v('d-grad-year');
+      if(!gradYear){setErr('err-d-grad-year','مطلوب');valid=false;}
     }
     if(!valid)return;
     const users=getUsers();
-    if(users.find(u=>u.username===username)){setErr('err-d-username','اسم المستخدم مستخدم بالفعل');return;}
-    const user={username,email,phone,dob,pass,gov,city,district,university,academicStatus:status,role:'doctor',status:'pending',createdAt:Date.now()};
-    users.push(user);saveUsers(users);
-    showAlert('تم إنشاء حسابك بنجاح! سيتم مراجعة بياناتك قريباً. يمكنك تسجيل الدخول الآن.');
-    switchTab('login');
+    if(users.find(u=>u.username===username)){setErr('err-d-username','الاسم مستخدم بالفعل');return;}
+    
+    const user={
+      username,email,phone,dob,pass,gov,district,university,academicStatus:status,
+      academicYear,academicLevel,dorm,gradYear,
+      role:'doctor',docStep:'course',status:'pending',createdAt:Date.now()
+    };
+    users.push(user);saveUsers(users);saveSession(user);
+    closeAuth();enterPlatform(user);
+    showAlert('تم إنشاء حسابك! انتقل الآن للكورس التعريفي.');
   } else {
     const username=v('c-username'),email=v('c-email'),phone=v('c-phone'),dob=v('c-dob');
-    const pass=v('c-pass'),pass2=v('c-pass2'),gov=v('c-gov'),city=v('c-city'),district=v('c-district');
+    const pass=v('c-pass'),pass2=v('c-pass2'),gov=v('c-gov'),district=v('c-district');
     const address=document.getElementById('c-address').value.trim();
-    if(!username){setErr('err-c-username','اسم المستخدم مطلوب');valid=false;}
-    if(!email||!email.includes('@')){setErr('err-c-email','بريد إلكتروني غير صالح');valid=false;}
-    if(!phone||phone.length<11){setErr('err-c-phone','رقم الموبايل غير صالح');valid=false;}
-    if(!dob){setErr('err-c-dob','تاريخ الميلاد مطلوب');valid=false;}
-    if(pass.length<6){setErr('err-c-pass','كلمة المرور 6 أحرف على الأقل');valid=false;}
-    if(pass!==pass2){setErr('err-c-pass2','كلمتا المرور غير متطابقتين');valid=false;}
-    if(!gov){setErr('err-c-gov','اختر المحافظة');valid=false;}
-    if(gov&&!city){setErr('err-c-city','اختر المدينة');valid=false;}
-    if(gov&&city&&!district){setErr('err-c-district','اختر الحي/القسم');valid=false;}
-    if(!address){setErr('err-c-address','العنوان التفصيلي مطلوب');valid=false;}
+    if(!username||!pass||!gov){setErr('err-c-username','أكمل البيانات');valid=false;}
     if(!valid)return;
     const users=getUsers();
-    if(users.find(u=>u.username===username)){setErr('err-c-username','اسم المستخدم مستخدم بالفعل');return;}
-    const user={username,email,phone,dob,pass,gov,city,district,address,role:'citizen',status:'active',createdAt:Date.now()};
+    if(users.find(u=>u.username===username)){setErr('err-c-username','الاسم مستخدم بالفعل');return;}
+    const user={username,email,phone,dob,pass,gov,district,address,role:'citizen',status:'active',createdAt:Date.now()};
     users.push(user);saveUsers(users);saveSession(user);closeAuth();enterPlatform(user);
   }
 }
@@ -371,30 +531,148 @@ function submitRegister(){
 function submitLogin(){
   clearErrors();
   const loginId=v('login-id'),pass=v('login-pass');
-  if(!loginId){setErr('err-login-id','أدخل رقم الموبايل أو البريد الإلكتروني');return;}
-  if(!pass){setErr('err-login-pass','كلمة المرور مطلوبة');return;}
+  if(!loginId){setErr('err-login-id','مطلوب');return;}
+  if(!pass){setErr('err-login-pass','مطلوب');return;}
   const users=getUsers();
   const user=users.find(u=>(u.phone===loginId||u.email===loginId)&&u.pass===pass&&u.role===currentRole);
-  if(!user){setErr('err-login-pass','البيانات المدخلة غير صحيحة');return;}
+  if(!user){setErr('err-login-pass','البيانات غير صحيحة');return;}
   saveSession(user);closeAuth();enterPlatform(user);
 }
 
+function refreshUser(user){
+  const users=getUsers();
+  const fresh = users.find(u=>u.username===user.username);
+  if(fresh) { saveSession(fresh); return fresh; }
+  return user;
+}
+
 function enterPlatform(user){
+  user = refreshUser(user);
+  
   document.getElementById('gateway').style.display='none';
   document.getElementById('platform').classList.add('active');
   document.getElementById('top-username').textContent=user.username;
   const badge=document.getElementById('user-badge');
+  
   if(user.role==='doctor'){
     badge.innerHTML='<i class="fa-solid fa-stethoscope"></i> طبيب بيطري';
     badge.className='badge doctor';
-    document.getElementById('welcome-msg').textContent='مرحباً دكتور '+user.username+'! أنت الآن مسجل في منصة رفيق الطريق.';
-    if(user.status==='pending')document.getElementById('pending-notice').style.display='';
+    document.getElementById('welcome-msg').textContent='مرحباً دكتور '+user.username;
+    
+    document.getElementById('doctor-flow').style.display='block';
+    
+    if(user.docStep==='interview' && user.interviewDate && !user.interviewNotified){
+      showAlert(`تم تحديد موعد المقابلة الخاص بك: ${new Date(user.interviewDate).toLocaleString('ar-EG')}`);
+      const users = getUsers();
+      const idx = users.findIndex(u=>u.username===user.username);
+      if(idx>-1) { users[idx].interviewNotified = true; saveUsers(users); saveSession(users[idx]); }
+    }
+    
+    renderStepper(user.docStep, user.interviewDate);
+    
   } else {
     badge.innerHTML='<i class="fa-solid fa-house-user"></i> مواطن';
     badge.className='badge citizen';
     document.getElementById('welcome-msg').textContent='مرحباً '+user.username+'! أنت الآن جزء من مجتمع رفيق الطريق.';
   }
 }
+
+function renderStepper(step, interviewDate) {
+  const s1 = document.getElementById('step-1');
+  const s2 = document.getElementById('step-2');
+  const s3 = document.getElementById('step-3');
+  const s4 = document.getElementById('step-4');
+  const vC = document.getElementById('view-course');
+  const vI = document.getElementById('view-interview');
+  const vA = document.getElementById('view-approved');
+  
+  [s1,s2,s3,s4].forEach(s=>s.className='stepper-item');
+  [vC,vI,vA].forEach(v=>v.classList.remove('active'));
+  
+  s1.classList.add('completed');
+  
+  if(step === 'course'){
+    s2.classList.add('active');
+    vC.classList.add('active');
+  } else if(step === 'interview'){
+    s2.classList.add('completed');
+    s2.querySelector('.step-counter').innerHTML = '<i class="fa-solid fa-check"></i>';
+    s3.classList.add('active');
+    vI.classList.add('active');
+    
+    const statusMsg = document.getElementById('interview-status-msg');
+    if(interviewDate){
+      statusMsg.innerHTML = `<span style="color:var(--success)"><i class="fa-solid fa-calendar-check"></i> موعدك: ${new Date(interviewDate).toLocaleString('ar-EG')}</span>`;
+      statusMsg.style.color = 'var(--success)';
+    } else {
+      statusMsg.innerHTML = 'جاري تحديد موعد المقابلة <i class="fa-solid fa-spinner fa-spin"></i>';
+      statusMsg.style.color = 'var(--gold-dark)';
+    }
+  } else if(step === 'approved'){
+    s2.classList.add('completed');
+    s2.querySelector('.step-counter').innerHTML = '<i class="fa-solid fa-check"></i>';
+    s3.classList.add('completed');
+    s3.querySelector('.step-counter').innerHTML = '<i class="fa-solid fa-check"></i>';
+    s4.classList.add('completed');
+    s4.querySelector('.step-counter').innerHTML = '<i class="fa-solid fa-check"></i>';
+    vA.classList.add('active');
+  }
+}
+
+// REAL EXAM LOGIC
+function submitExam(){
+  const correctAnswers = {
+    q1: 'لقاح السعار (Rabies Vaccine)',
+    q2: 'تقنية TNVR (الخصي/التعقيم والتلقيح ثم الإطلاق)',
+    q3: 'تطهير الجرح بمحلول ملحي معقم ومطهر مناسب',
+    q4: 'التغير السلوكي الحاد والرهاب من الماء أو الضوء',
+    q5: 'خلق بيئة آمنة للإنسان والحيوان وتخفيض المخاطر صحياً'
+  };
+
+  const questionsText = {
+    q1: 'ما هو التطعيم الأولي الواجب إعطاؤه للكلب عند السيطرة عليه من الشارع؟',
+    q2: 'ما هي الطريقة العالمية الموصى بها إنسانياً وبيئياً للسيطرة على أعداد الكلاب الضالة؟',
+    q3: 'ما هو الإجراء الطبي الصحيح للتعامل مع جرح سطحي لحيوان قبل التضميد؟',
+    q4: 'ما هي العلامة الأولية الرئيسية لمرض السعار لدى الكلاب؟',
+    q5: 'ما هو الهدف الأساسي من مشاركتك كطبيب في مبادرة رفيق الطريق؟'
+  };
+
+  let score = 0;
+  let examDetails = [];
+
+  for(let i=1; i<=5; i++){
+    const qKey = 'q' + i;
+    const selected = document.querySelector(`input[name="${qKey}"]:checked`);
+    const selectedVal = selected ? selected.value : 'لم يتم الإجابة';
+    const isCorrect = selectedVal === correctAnswers[qKey];
+
+    if(isCorrect) score++;
+
+    examDetails.push({
+      question: questionsText[qKey],
+      selectedAnswer: selectedVal,
+      correctAnswer: correctAnswers[qKey],
+      isCorrect: isCorrect
+    });
+  }
+
+  const scoreStr = `${score} من 5 (${(score/5)*100}%)`;
+
+  document.getElementById('exam-modal').style.display='none';
+  const u = getSession();
+  const users = getUsers();
+  const idx = users.findIndex(x=>x.username===u.username);
+  if(idx>-1) { 
+    users[idx].docStep = 'interview'; 
+    users[idx].examScore = scoreStr;
+    users[idx].examDetails = examDetails;
+    saveUsers(users); 
+    saveSession(users[idx]); 
+  }
+  renderStepper('interview');
+  showAlert(`تم تسليم الإجابات بنجاح!\nدرجتك في الاختبار: ${scoreStr}.\nيرجى انتظار تحديد موعد المقابلة.`);
+}
+
 function logout(){clearSession();location.reload();}
 function showAlert(msg){document.getElementById('alert-msg').textContent=msg;document.getElementById('alert-modal').classList.add('active');}
 function closeAlert(){document.getElementById('alert-modal').classList.remove('active');}
