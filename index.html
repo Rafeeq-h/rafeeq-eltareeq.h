@@ -10,99 +10,214 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#c8a96e;--gold-dark:#a07840;--sand:#f5efe6;--sand-dark:#e8dccf;--brown:#5c3d1e;--brown-light:#7a5230;--white:#ffffff;--text:#2d1f0f;--text-muted:#7a6a5a;--error:#c0392b;--success:#27ae60;--warning:#e67e22;--shadow:0 4px 24px rgba(92,61,30,0.13);--radius:14px}
+    :root{
+      --gold:#c8a96e;--gold-dark:#a07840;--sand:#f5efe6;--sand-dark:#e8dccf;
+      --brown:#5c3d1e;--brown-light:#7a5230;--white:#ffffff;
+      --text:#2d1f0f;--text-muted:#7a6a5a;
+      --error:#c0392b;--success:#27ae60;--warning:#e67e22;
+      --shadow:0 4px 24px rgba(92,61,30,0.13);--radius:14px
+    }
     body{font-family:"Tajawal","Segoe UI",Tahoma,Arial,sans-serif;background:var(--sand);color:var(--text);min-height:100vh}
+
+    /* GATEWAY */
     #gateway{position:fixed;inset:0;background:linear-gradient(135deg,#3b2208 0%,#7a5230 50%,#c8a96e 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:32px}
     .logo-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
     .logo-img{width:110px;height:110px;border-radius:50%;border:4px solid var(--gold);object-fit:cover;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,0.35)}
-    .logo-title{font-size:2.3rem;font-weight:800;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.4);letter-spacing:1px}
+    .logo-title{font-size:2.3rem;font-weight:800;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.4)}
     .logo-sub{font-size:1rem;color:#f5deb3;text-align:center;max-width:320px}
-    .gw-btns{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
-    .gw-btn{padding:16px 44px;font-size:1.15rem;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 16px rgba(0,0,0,0.25);display:flex;align-items:center;gap:10px}
+    .gw-btns{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;position:relative;z-index:10005;pointer-events:auto}
+    .gw-btn{padding:16px 44px;font-size:1.15rem;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 16px rgba(0,0,0,0.25);display:flex;align-items:center;gap:10px;position:relative;z-index:10010;pointer-events:auto}
     .gw-btn:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.38)}
     .gw-btn.doctor{background:var(--gold);color:var(--brown)}
     .gw-btn.citizen{background:#fff;color:var(--brown)}
-    
-    #auth-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:10000;align-items:center;justify-content:center}
-    #auth-overlay.active{display:flex}
+
+    /* AUTH OVERLAY */
+    #auth-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:20000;align-items:center;justify-content:center}
+    #auth-overlay.active{display:flex !important;z-index:20000 !important;pointer-events:auto !important}
     .auth-modal{background:#fff;border-radius:var(--radius);padding:32px 28px;width:95%;max-width:540px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.35)}
     .auth-modal h2{text-align:center;font-size:1.4rem;font-weight:800;color:var(--brown);margin-bottom:5px;display:flex;align-items:center;justify-content:center;gap:8px}
     .auth-modal .sub{text-align:center;color:var(--text-muted);font-size:0.88rem;margin-bottom:20px}
     .auth-tabs{display:flex;margin-bottom:22px;border-radius:10px;overflow:hidden;border:2px solid var(--gold)}
-    .auth-tab{flex:1;padding:10px;text-align:center;font-size:0.97rem;font-weight:600;background:#fff;color:var(--brown);cursor:pointer;border:none;transition:background 0.2s,color 0.2s}
+    .auth-tab{flex:1;padding:10px;text-align:center;font-size:0.97rem;font-weight:600;background:#fff;color:var(--brown);cursor:pointer;border:none;transition:0.2s}
     .auth-tab.active{background:var(--gold);color:#fff}
     .form-group{margin-bottom:14px}
     .form-group label{display:flex;align-items:center;gap:7px;font-size:0.88rem;font-weight:600;color:var(--brown);margin-bottom:5px}
     .form-group label i{color:var(--gold);width:15px;text-align:center}
     .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 13px;border:1.5px solid var(--sand-dark);border-radius:9px;font-size:0.94rem;background:var(--sand);color:var(--text);outline:none;transition:border 0.2s;font-family:inherit}
     .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold)}
-    .field-err{color:var(--error);font-size:0.79rem;margin-top:4px}
-    .file-upload-wrap{display:flex;align-items:center;gap:12px;border:2px dashed var(--gold);border-radius:9px;padding:10px 14px;cursor:pointer;background:var(--sand);transition:background 0.2s}
+    .field-err{color:var(--error);font-size:0.79rem;margin-top:4px;font-weight:700}
+    .file-upload-wrap{display:flex;align-items:center;gap:12px;border:2px dashed var(--gold);border-radius:9px;padding:10px 14px;cursor:pointer;background:var(--sand)}
     .file-upload-wrap input[type=file]{display:none}
     .file-upload-wrap .upload-icon{color:var(--gold);font-size:1.4rem}
     .file-upload-wrap .upload-text{font-size:0.88rem;color:var(--brown);font-weight:600}
     .file-preview-rect{width:100%;max-width:220px;height:130px;object-fit:cover;border-radius:7px;display:none;border:2px solid var(--gold);margin-top:8px}
-    .radio-group{display:flex;gap:16px;margin-top:4px}
+    .radio-group{display:flex;gap:16px;margin-top:4px;flex-wrap:wrap}
     .radio-option{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.93rem;font-weight:600;color:var(--brown)}
     .radio-option input[type=radio]{accent-color:var(--gold);width:17px;height:17px}
     .cond-section{border-right:3px solid var(--gold);padding:14px 14px 14px 0;margin:4px 0;background:rgba(200,169,110,0.07);border-radius:0 9px 9px 0}
     .cond-title{font-size:0.85rem;font-weight:700;color:var(--gold-dark);margin-bottom:12px;display:flex;align-items:center;gap:6px}
-    .btn-submit{width:100%;padding:13px;background:var(--gold);color:#fff;border:none;border-radius:10px;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:12px;transition:background 0.2s,transform 0.15s;display:flex;align-items:center;justify-content:center;gap:9px}
+    .btn-submit{width:100%;padding:13px;background:var(--gold);color:#fff;border:none;border-radius:10px;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:12px;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:9px}
     .btn-submit:hover{background:var(--gold-dark);transform:translateY(-1px)}
     .back-link{display:block;text-align:center;margin-top:14px;color:var(--gold-dark);font-size:0.9rem;cursor:pointer;text-decoration:underline}
-    
+    .form-divider{margin:18px 0 12px;border-bottom:2px solid var(--sand-dark);padding-bottom:8px}
+    .form-divider span{font-size:0.88rem;font-weight:700;color:var(--brown);display:flex;align-items:center;gap:6px}
+
+    /* MODALS */
     #alert-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:20000;align-items:center;justify-content:center}
     #alert-modal.active{display:flex}
-    .alert-box{background:#fff;border-radius:14px;padding:32px 26px;max-width:420px;width:92%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
-    .alert-box button{padding:11px 38px;background:var(--gold);color:#fff;border:none;border-radius:9px;font-size:1rem;font-weight:700;cursor:pointer}
-    
-    #platform{display:none}
-    #platform.active{display:block}
-    .topbar{background:linear-gradient(90deg,var(--brown) 0%,var(--brown-light) 100%);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
-    .topbar .brand{font-size:1.25rem;font-weight:800;display:flex;align-items:center;gap:10px}
-    .topbar .logout-btn{background:var(--gold);color:var(--brown);border:none;border-radius:8px;padding:7px 18px;font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px}
-    .dashboard{max-width:1100px;margin:30px auto;padding:0 16px}
-    
-    /* ROLE DASHBOARD STYLES */
-    .role-header-banner{background:#fff;border-radius:var(--radius);padding:24px 30px;box-shadow:var(--shadow);margin-bottom:24px;border-right:6px solid var(--gold);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-    .role-title-txt{font-size:1.5rem;font-weight:800;color:var(--brown);display:flex;align-items:center;gap:10px}
-    .role-scope-badge{background:var(--sand-dark);color:var(--brown);padding:6px 14px;border-radius:8px;font-weight:700;font-size:0.9rem}
-    
-    .nav-bar-tabs{display:flex;gap:10px;margin-bottom:24px;border-bottom:2px solid var(--sand-dark);padding-bottom:10px;overflow-x:auto}
-    .nav-role-tab{padding:10px 22px;border-radius:10px;background:#fff;color:var(--brown);font-weight:700;border:1px solid var(--sand-dark);cursor:pointer;display:flex;align-items:center;gap:8px;transition:0.2s;white-space:nowrap}
-    .nav-role-tab.active{background:var(--gold);color:#fff;border-color:var(--gold)}
-    
-    .tab-pane{display:none}
-    .tab-pane.active{display:block}
-    
-    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;margin-bottom:24px}
-    .panel-card{background:#fff;border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);border:1px solid var(--sand-dark)}
-    .panel-card h3{font-size:1.15rem;font-weight:800;color:var(--brown);margin-bottom:14px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--sand);padding-bottom:10px}
-    
-    .data-item-row{background:var(--sand);padding:12px 14px;border-radius:10px;margin-bottom:10px;border-right:4px solid var(--gold);display:flex;justify-content:space-between;align-items:center}
-    .data-item-row.clickable{cursor:pointer;transition:transform 0.15s}
-    .data-item-row.clickable:hover{transform:translateX(-3px)}
-    
-    /* EVALUATION SLIDERS */
+    .alert-box{background:#fff;border-radius:14px;padding:32px 26px;max-width:460px;width:92%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
+    .alert-box button{padding:11px 38px;background:var(--gold);color:#fff;border:none;border-radius:9px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:10px}
+
+    #lock-notice-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:40000;align-items:center;justify-content:center}
+    #eval-modal,#chat-modal,#incident-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:35000;align-items:center;justify-content:center}
+
+    .eval-box,.chat-modal-box,.incident-box{background:#fff;border-radius:16px;padding:26px;width:95%;max-width:620px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.35)}
     .eval-criterion{margin-bottom:14px;background:var(--sand);padding:12px;border-radius:8px}
     .eval-lbl{display:flex;justify-content:space-between;font-weight:700;font-size:0.9rem;margin-bottom:6px;color:var(--brown)}
     .eval-input{width:100%;accent-color:var(--gold)}
-    
-    /* CHAT MODAL */
-    .chat-modal-box{background:#fff;border-radius:16px;width:95%;max-width:650px;max-height:85vh;padding:24px;display:flex;flex-direction:column}
-    .chat-msgs-list{flex:1;overflow-y:auto;background:var(--sand);padding:14px;border-radius:10px;margin:14px 0;display:flex;flex-direction:column;gap:10px}
+    .eval-guide{font-size:0.78rem;color:var(--text-muted);margin-top:4px;line-height:1.6}
+
+    .chat-msgs-list{flex:1;overflow-y:auto;background:var(--sand);padding:14px;border-radius:10px;margin:14px 0;display:flex;flex-direction:column;gap:10px;min-height:200px}
     .chat-msg-bubble{padding:10px 14px;border-radius:12px;max-width:80%;font-size:0.9rem;line-height:1.5}
     .chat-msg-bubble.me{background:var(--gold);color:#fff;align-self:flex-end;border-bottom-left-radius:0}
     .chat-msg-bubble.other{background:#fff;color:var(--text);align-self:flex-start;border-bottom-right-radius:0;box-shadow:0 2px 6px rgba(0,0,0,0.05)}
-    
-    /* CAMPAIGN MAP SIMULATION */
-    .map-sim{height:220px;background:linear-gradient(135deg,#e0eedb 0%,#c7e2bf 100%);border-radius:10px;border:2px dashed var(--gold-dark);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:14px}
+
+    /* PLATFORM TOPBAR & LAYOUT */
+    #platform{display:none}
+    #platform.active{display:block}
+    .topbar{background:linear-gradient(90deg,var(--brown) 0%,var(--brown-light) 100%);color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,0.15)}
+    .topbar .brand{font-size:1.25rem;font-weight:800;display:flex;align-items:center;gap:10px}
+    .topbar .logout-btn{background:var(--gold);color:var(--brown);border:none;border-radius:8px;padding:7px 18px;font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:0.2s}
+    .topbar .logout-btn:hover{background:#fff;color:var(--brown)}
+    .dashboard{max-width:1100px;margin:24px auto;padding:0 16px}
+
+    .role-header-banner{background:#fff;border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);margin-bottom:20px;border-right:6px solid var(--gold);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+    .role-title-txt{font-size:1.4rem;font-weight:800;color:var(--brown);display:flex;align-items:center;gap:10px}
+    .role-scope-badge{background:var(--sand-dark);color:var(--brown);padding:6px 14px;border-radius:8px;font-weight:700;font-size:0.9rem}
+
+    /* FACEBOOK-STYLE ICON TABS NAVBAR WITH ACTIVE EFFECT */
+    .fb-nav-tabs{
+      display:flex;
+      background:#fff;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+      overflow:hidden;
+      border-bottom:3px solid var(--sand-dark);
+      position:relative;
+    }
+    .fb-tab{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:12px 16px;
+      background:transparent;
+      border:none;
+      cursor:pointer;
+      color:var(--text-muted);
+      font-weight:700;
+      font-size:0.9rem;
+      font-family:inherit;
+      position:relative;
+      transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      outline:none;
+      gap:4px;
+    }
+    .fb-tab i{
+      font-size:1.4rem;
+      transition:transform 0.25s ease, color 0.25s ease;
+    }
+    .fb-tab:hover{
+      background:rgba(200,169,110,0.08);
+      color:var(--brown);
+    }
+    .fb-tab.active{
+      color:var(--brown);
+      font-weight:800;
+      background:rgba(200,169,110,0.12);
+    }
+    .fb-tab.active i{
+      color:var(--gold-dark);
+      transform:scale(1.18);
+    }
+    .fb-tab.active::after{
+      content:'';
+      position:absolute;
+      bottom:-3px;
+      left:0;
+      right:0;
+      height:4px;
+      background:linear-gradient(90deg,var(--gold-dark),var(--gold));
+      border-radius:4px 4px 0 0;
+      animation:slideIn 0.25s ease forwards;
+    }
+    @keyframes slideIn{
+      from{transform:scaleX(0.3);opacity:0}
+      to{transform:scaleX(1);opacity:1}
+    }
+
+    .tab-pane{display:none}
+    .tab-pane.active{display:block;animation:fadeIn 0.25s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+    .panel-card{background:#fff;border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);border:1px solid var(--sand-dark);margin-bottom:20px}
+    .panel-card h3{font-size:1.05rem;font-weight:800;color:var(--brown);margin-bottom:14px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--sand);padding-bottom:10px}
+    .data-item-row{background:var(--sand);padding:14px 16px;border-radius:10px;margin-bottom:10px;border-right:4px solid var(--gold);display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .data-item-row.clickable{cursor:pointer;transition:0.15s}
+    .data-item-row.clickable:hover{transform:translateX(-3px);background:var(--sand-dark)}
+    .data-item-row.empty-state{background:#faf8f5;border-right-color:var(--sand-dark);color:var(--text-muted);justify-content:center;text-align:center;padding:24px;font-weight:600;font-size:0.92rem}
+
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .info-item{background:var(--sand);padding:12px 16px;border-radius:10px;border-right:4px solid var(--gold)}
+    .info-item .lbl{font-size:0.82rem;color:var(--text-muted);font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:4px}
+    .info-item .val{font-size:0.97rem;font-weight:700;color:var(--brown)}
+
+    .badge{padding:5px 12px;border-radius:8px;font-size:0.78rem;font-weight:700;white-space:nowrap;display:inline-block}
+    .badge-green{background:#d4edda;color:#155724}
+    .badge-yellow{background:#fff3cd;color:#856404}
+    .badge-red{background:#f8d7da;color:#721c24}
+    .badge-blue{background:#d1ecf1;color:#0c5460}
+    .badge-gray{background:#e2e3e5;color:#383d41}
+
+    .btn{padding:8px 14px;border-radius:8px;border:none;font-weight:700;font-size:0.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:0.2s}
+    .btn:hover{opacity:0.88}
+    .btn-gold{background:var(--gold);color:#fff}
+    .btn-danger{background:var(--error);color:#fff}
+    .btn-success{background:var(--success);color:#fff}
+    .btn-gray{background:var(--sand-dark);color:var(--brown)}
+    .row-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+
+    .filter-bar{background:#fff;padding:14px 20px;border-radius:12px;margin-bottom:20px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+    .filter-bar label{font-weight:700;color:var(--brown);font-size:0.9rem;display:flex;align-items:center;gap:6px}
+    .filter-bar select{padding:8px 12px;border:1.5px solid var(--sand-dark);border-radius:8px;font-size:0.9rem;font-family:inherit;background:var(--sand);color:var(--text);cursor:pointer;outline:none}
+    .filter-bar select:focus{border-color:var(--gold)}
+    .section-hdr{font-size:1.05rem;font-weight:800;color:var(--brown);margin:20px 0 12px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:2px solid var(--sand-dark)}
+
+    .star-rating{display:flex;gap:4px;font-size:1.4rem}
+    .star{cursor:pointer;color:#ddd;transition:color 0.15s}
+    .star.lit{color:#f4c23a}
+
+    .map-sim{height:200px;background:linear-gradient(135deg,#e0eedb 0%,#c7e2bf 100%);border-radius:10px;border:2px dashed var(--gold-dark);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:14px}
     .map-pin{position:absolute;color:var(--error);font-size:1.8rem;animation:bounce 1.5s infinite}
     @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+    .doctor-card{background:var(--sand);border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-right:4px solid var(--gold)}
+    .doctor-card.clickable{cursor:pointer;transition:0.15s}
+    .doctor-card.clickable:hover{background:var(--sand-dark)}
+    .score-bar-bg{height:7px;background:#ddd;border-radius:10px;overflow:hidden;margin-top:4px}
+    .score-bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--gold-dark),var(--gold))}
+
+    .settings-section{background:#fff;border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:20px}
+    .settings-section h3{font-size:1.05rem;font-weight:800;color:var(--brown);margin-bottom:16px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--sand);padding-bottom:10px}
+
+    @media(max-width:600px){.topbar{padding:10px 16px}.filter-bar{flex-direction:column;align-items:flex-start}.fb-tab span{font-size:0.8rem}}
   </style>
 </head>
 <body>
 
+<!-- GATEWAY -->
 <div id="gateway">
   <div class="logo-wrap">
     <img class="logo-img" id="logo-img" src="" alt="رفيق الطريق" onerror="this.style.display='none'"/>
@@ -110,22 +225,23 @@
     <div class="logo-sub">معاً لبيئة آمنة للإنسان والحيوان</div>
   </div>
   <div class="gw-btns">
-    <button class="gw-btn doctor" onclick="openAuth('doctor')"><i class="fa-solid fa-stethoscope"></i> طبيب بيطري</button>
-    <button class="gw-btn citizen" onclick="openAuth('citizen')"><i class="fa-solid fa-house-user"></i> مواطن</button>
+    <button type="button" class="gw-btn doctor" onclick="openAuth('doctor')"><i class="fa-solid fa-stethoscope"></i> طبيب بيطري</button>
+    <button type="button" class="gw-btn citizen" onclick="openAuth('citizen')"><i class="fa-solid fa-house-user"></i> مواطن</button>
   </div>
 </div>
 
-<!-- ACCOUNT LOCK NOTIFICATION MODAL -->
-<div id="lock-notice-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:40000;align-items:center;justify-content:center">
+<!-- LOCK MODAL -->
+<div id="lock-notice-modal">
   <div class="alert-box" style="border-top:6px solid var(--error)">
     <div style="font-size:3rem;color:var(--error);margin-bottom:10px"><i class="fa-solid fa-user-lock"></i></div>
     <h2 style="color:var(--brown);margin-bottom:10px">الحساب موقوف مؤقتاً</h2>
     <p id="lock-notice-msg" style="font-size:0.95rem;color:var(--text);margin-bottom:16px"></p>
-    <div style="background:var(--sand);padding:12px;border-radius:10px;font-weight:800;font-size:1.2rem;color:var(--error);margin-bottom:20px" id="lock-timer-display">00:00:00</div>
+    <div style="background:var(--sand);padding:12px;border-radius:10px;font-weight:800;font-size:1.4rem;color:var(--error);margin-bottom:20px" id="lock-timer-display">00:00:00</div>
     <button onclick="location.reload()" style="background:var(--brown)">حسناً</button>
   </div>
 </div>
 
+<!-- AUTH OVERLAY -->
 <div id="auth-overlay" onclick="handleOverlayClick(event)">
   <div class="auth-modal" onclick="event.stopPropagation()">
     <div style="width:40px;height:4px;background:var(--sand-dark);border-radius:4px;margin:0 auto 18px;display:none" id="modal-handle"></div>
@@ -135,9 +251,7 @@
       <button class="auth-tab active" id="tab-register" onclick="switchTab('register')"><i class="fa-solid fa-user-plus"></i> إنشاء حساب</button>
       <button class="auth-tab" id="tab-login" onclick="switchTab('login')"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
     </div>
-    
     <div id="register-form">
-      <!-- DOCTOR FIELDS -->
       <div id="doctor-fields" style="display:none">
         <div class="form-divider"><span><i class="fa-solid fa-circle-info"></i> البيانات الشخصية</span></div>
         <div class="form-group"><label><i class="fa-solid fa-user"></i> اسم المستخدم</label><input type="text" id="d-username" placeholder="أدخل اسم المستخدم"/><div class="field-err" id="err-d-username"></div></div>
@@ -146,11 +260,9 @@
         <div class="form-group"><label><i class="fa-solid fa-calendar-days"></i> تاريخ الميلاد</label><input type="date" id="d-dob"/><div class="field-err" id="err-d-dob"></div></div>
         <div class="form-group"><label><i class="fa-solid fa-lock"></i> كلمة المرور</label><input type="password" id="d-pass" placeholder="6 أحرف على الأقل"/><div class="field-err" id="err-d-pass"></div></div>
         <div class="form-group"><label><i class="fa-solid fa-lock"></i> تأكيد كلمة المرور</label><input type="password" id="d-pass2" placeholder="أعد إدخال كلمة المرور"/><div class="field-err" id="err-d-pass2"></div></div>
-        
         <div class="form-divider"><span><i class="fa-solid fa-location-dot"></i> بيانات الموقع</span></div>
         <div class="form-group"><label><i class="fa-solid fa-map"></i> المحافظة</label><select id="d-gov" onchange="onGovChange('d')"><option value="">-- اختر المحافظة --</option></select><div class="field-err" id="err-d-gov"></div></div>
         <div class="form-group" id="d-district-wrap" style="display:none"><label><i class="fa-solid fa-map-pin"></i> المركز / القسم</label><select id="d-district"><option value="">-- اختر المركز/القسم --</option></select><div class="field-err" id="err-d-district"></div></div>
-        
         <div class="form-divider"><span><i class="fa-solid fa-graduation-cap"></i> البيانات الأكاديمية</span></div>
         <div class="form-group"><label><i class="fa-solid fa-school"></i> الجامعة</label><input type="text" id="d-university" placeholder="اسم الجامعة"/><div class="field-err" id="err-d-university"></div></div>
         <div class="form-group">
@@ -161,51 +273,31 @@
           </div>
           <div class="field-err" id="err-d-status"></div>
         </div>
-        
         <div id="student-section" style="display:none">
           <div class="cond-section">
             <div class="cond-title"><i class="fa-solid fa-book-open"></i> بيانات الطالب</div>
             <div class="form-group"><label><i class="fa-solid fa-layer-group"></i> السنة الدراسية</label><select id="d-year"><option value="">-- اختر السنة --</option><option>الفرقة الأولى</option><option>الفرقة الثانية</option><option>الفرقة الثالثة</option><option>الفرقة الرابعة</option><option>الفرقة الخامسة</option><option>سنة الامتياز</option></select><div class="field-err" id="err-d-year"></div></div>
             <div class="form-group"><label><i class="fa-solid fa-chart-bar"></i> المستوى الدراسي</label><select id="d-level"><option value="">-- اختر المستوى --</option><option>ممتاز</option><option>جيد جداً</option><option>جيد</option><option>مقبول</option></select><div class="field-err" id="err-d-level"></div></div>
-            <div class="form-group">
-              <label><i class="fa-solid fa-id-badge"></i> صورة الكارنيه (الوجه الأمامي)</label>
-              <label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الكارنيه الأمامية</span><input type="file" accept="image/*" id="d-carneh-front" onchange="previewFile(this,'prev-carneh-front')"/></label>
-              <img class="file-preview-rect" id="prev-carneh-front"/><div class="field-err" id="err-d-carneh-front"></div>
-            </div>
-            <div class="form-group">
-              <label><i class="fa-solid fa-id-badge"></i> صورة الكارنيه (الخلفية)</label>
-              <label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الكارنيه الخلفية</span><input type="file" accept="image/*" id="d-carneh-back" onchange="previewFile(this,'prev-carneh-back')"/></label>
-              <img class="file-preview-rect" id="prev-carneh-back"/><div class="field-err" id="err-d-carneh-back"></div>
-            </div>
+            <div class="form-group"><label><i class="fa-solid fa-id-badge"></i> صورة الكارنيه (الوجه الأمامي)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الكارنيه الأمامية</span><input type="file" accept="image/*" id="d-carneh-front" onchange="previewFile(this,'prev-carneh-front')"/></label><img class="file-preview-rect" id="prev-carneh-front"/><div class="field-err" id="err-d-carneh-front"></div></div>
+            <div class="form-group"><label><i class="fa-solid fa-id-badge"></i> صورة الكارنيه (الخلفية)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الكارنيه الخلفية</span><input type="file" accept="image/*" id="d-carneh-back" onchange="previewFile(this,'prev-carneh-back')"/></label><img class="file-preview-rect" id="prev-carneh-back"/><div class="field-err" id="err-d-carneh-back"></div></div>
             <div class="form-group">
               <label><i class="fa-solid fa-building-columns"></i> هل يوجد سكن جامعي؟</label>
-              <div class="radio-group">
-                <label class="radio-option"><input type="radio" name="d-dorm" value="yes"/> نعم</label>
-                <label class="radio-option"><input type="radio" name="d-dorm" value="no"/> لا</label>
-              </div>
+              <div class="radio-group"><label class="radio-option"><input type="radio" name="d-dorm" value="yes"/> نعم</label><label class="radio-option"><input type="radio" name="d-dorm" value="no"/> لا</label></div>
               <div class="field-err" id="err-d-dorm"></div>
             </div>
           </div>
         </div>
-        
         <div id="graduate-section" style="display:none">
           <div class="cond-section">
             <div class="cond-title"><i class="fa-solid fa-scroll"></i> بيانات الخريج</div>
             <div class="form-group"><label><i class="fa-solid fa-calendar-check"></i> عام التخرج</label><input type="number" id="d-grad-year" placeholder="مثال: 2022" min="1990" max="2030"/><div class="field-err" id="err-d-grad-year"></div></div>
-            <div class="form-group">
-              <label><i class="fa-solid fa-file-certificate"></i> شهادة التخرج</label>
-              <label class="file-upload-wrap"><i class="fa-solid fa-upload upload-icon"></i><span class="upload-text">ارفع صورة الشهادة</span><input type="file" accept="image/*,application/pdf" id="d-cert" onchange="previewFile(this,'prev-cert')"/></label>
-              <img class="file-preview-rect" id="prev-cert"/><div class="field-err" id="err-d-cert"></div>
-            </div>
+            <div class="form-group"><label><i class="fa-solid fa-file-certificate"></i> شهادة التخرج</label><label class="file-upload-wrap"><i class="fa-solid fa-upload upload-icon"></i><span class="upload-text">ارفع صورة الشهادة</span><input type="file" accept="image/*,application/pdf" id="d-cert" onchange="previewFile(this,'prev-cert')"/></label><img class="file-preview-rect" id="prev-cert"/><div class="field-err" id="err-d-cert"></div></div>
           </div>
         </div>
-        
         <div class="form-divider"><span><i class="fa-solid fa-id-card"></i> صورة الهوية الوطنية</span></div>
-        <div class="form-group"><label><i class="fa-solid fa-id-card"></i> الهوية الوطنية (الوجه الأمامي)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة الوجه الأمامي للهوية</span><input type="file" accept="image/*" id="d-id-front" onchange="previewFile(this,'prev-d-id-front')"/></label><img class="file-preview-rect" id="prev-d-id-front"/><div class="field-err" id="err-d-id-front"></div></div>
-        <div class="form-group"><label><i class="fa-solid fa-id-card"></i> الهوية الوطنية (الخلفية)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر صورة خلفية الهوية</span><input type="file" accept="image/*" id="d-id-back" onchange="previewFile(this,'prev-d-id-back')"/></label><img class="file-preview-rect" id="prev-d-id-back"/><div class="field-err" id="err-d-id-back"></div></div>
+        <div class="form-group"><label><i class="fa-solid fa-id-card"></i> الهوية (الوجه الأمامي)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر الوجه الأمامي للهوية</span><input type="file" accept="image/*" id="d-id-front" onchange="previewFile(this,'prev-d-id-front')"/></label><img class="file-preview-rect" id="prev-d-id-front"/><div class="field-err" id="err-d-id-front"></div></div>
+        <div class="form-group"><label><i class="fa-solid fa-id-card"></i> الهوية (الخلفية)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر خلفية الهوية</span><input type="file" accept="image/*" id="d-id-back" onchange="previewFile(this,'prev-d-id-back')"/></label><img class="file-preview-rect" id="prev-d-id-back"/><div class="field-err" id="err-d-id-back"></div></div>
       </div>
-      
-      <!-- CITIZEN FIELDS -->
       <div id="citizen-fields" style="display:none">
         <div class="form-divider"><span><i class="fa-solid fa-circle-info"></i> البيانات الشخصية</span></div>
         <div class="form-group"><label><i class="fa-solid fa-user"></i> اسم المستخدم</label><input type="text" id="c-username" placeholder="أدخل اسم المستخدم"/><div class="field-err" id="err-c-username"></div></div>
@@ -218,14 +310,15 @@
         <div class="form-group"><label><i class="fa-solid fa-map"></i> المحافظة</label><select id="c-gov" onchange="onGovChange('c')"><option value="">-- اختر المحافظة --</option></select><div class="field-err" id="err-c-gov"></div></div>
         <div class="form-group" id="c-district-wrap" style="display:none"><label><i class="fa-solid fa-map-pin"></i> المركز / القسم</label><select id="c-district"><option value="">-- اختر المركز/القسم --</option></select><div class="field-err" id="err-c-district"></div></div>
         <div class="form-group"><label><i class="fa-solid fa-map-location-dot"></i> العنوان التفصيلي</label><textarea id="c-address" placeholder="أدخل عنوانك بالتفصيل..."></textarea><div class="field-err" id="err-c-address"></div></div>
+        <div class="form-divider"><span><i class="fa-solid fa-id-card"></i> صورة الهوية الوطنية للمواطن</span></div>
+        <div class="form-group"><label><i class="fa-solid fa-id-card"></i> الهوية الوطنية (الوجه الأمامي)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر الوجه الأمامي للهوية</span><input type="file" accept="image/*" id="c-id-front" onchange="previewFile(this,'prev-c-id-front')"/></label><img class="file-preview-rect" id="prev-c-id-front"/><div class="field-err" id="err-c-id-front"></div></div>
+        <div class="form-group"><label><i class="fa-solid fa-id-card"></i> الهوية الوطنية (الخلفية)</label><label class="file-upload-wrap"><i class="fa-solid fa-camera upload-icon"></i><span class="upload-text">اختر خلفية الهوية</span><input type="file" accept="image/*" id="c-id-back" onchange="previewFile(this,'prev-c-id-back')"/></label><img class="file-preview-rect" id="prev-c-id-back"/><div class="field-err" id="err-c-id-back"></div></div>
       </div>
-      
       <button class="btn-submit" onclick="submitRegister()"><i class="fa-solid fa-user-check"></i> إنشاء الحساب</button>
     </div>
-    
     <div id="login-form" style="display:none">
       <div class="form-group">
-        <label><i class="fa-solid fa-user"></i> اسم المستخدم / رقم الموبايل / البريد الإلكتروني</label>
+        <label><i class="fa-solid fa-user"></i> اسم المستخدم / رقم الموبايل / البريد</label>
         <input type="text" id="login-id" placeholder="اسم المستخدم أو 01XXXXXXXXX أو example@email.com"/>
         <div class="field-err" id="err-login-id"></div>
       </div>
@@ -241,94 +334,91 @@
       </div>
       <button class="btn-submit" onclick="submitLogin()"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
     </div>
-    
-    <!-- FORGOT PASSWORD FORM -->
     <div id="forgot-form" style="display:none">
       <div style="background:rgba(200,169,110,0.12);padding:14px;border-radius:10px;margin-bottom:16px;border-right:4px solid var(--gold)">
         <h4 style="color:var(--brown);font-weight:800;margin-bottom:4px"><i class="fa-solid fa-shield-halved"></i> استعادة كلمة المرور</h4>
-        <p style="font-size:0.85rem;color:var(--text-muted)">أدخل اسم المستخدم أو رقم الموبايل أو البريد المرتبط بحسابك لتعيين كلمة مرور جديدة.</p>
+        <p style="font-size:0.85rem;color:var(--text-muted)">أدخل اسم المستخدم أو رقم الموبايل أو البريد المرتبط بحسابك.</p>
       </div>
       <div id="forgot-step-1">
-        <div class="form-group">
-          <label><i class="fa-solid fa-magnifying-glass"></i> حسابك (اسم المستخدم / الموبايل / البريد)</label>
-          <input type="text" id="forgot-search-id" placeholder="أدخل بيانات حسابك"/>
-          <div class="field-err" id="err-forgot-search"></div>
-        </div>
+        <div class="form-group"><label><i class="fa-solid fa-magnifying-glass"></i> حسابك</label><input type="text" id="forgot-search-id" placeholder="أدخل بيانات حسابك"/><div class="field-err" id="err-forgot-search"></div></div>
         <button class="btn-submit" onclick="verifyForgotUser()"><i class="fa-solid fa-magnifying-glass"></i> البحث عن الحساب</button>
       </div>
       <div id="forgot-step-2" style="display:none">
         <div style="background:#e8f4ec;padding:10px 14px;border-radius:8px;margin-bottom:14px;color:var(--success);font-weight:700;font-size:0.9rem">
           <i class="fa-solid fa-user-check"></i> تم العثور على حساب: <span id="forgot-found-username"></span>
         </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-lock"></i> كلمة المرور الجديدة</label>
-          <input type="password" id="forgot-new-pass" placeholder="6 أحرف على الأقل"/>
-          <div class="field-err" id="err-forgot-new-pass"></div>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-lock"></i> تأكيد كلمة المرور الجديدة</label>
-          <input type="password" id="forgot-new-pass2" placeholder="أعد إدخال كلمة المرور"/>
-          <div class="field-err" id="err-forgot-new-pass2"></div>
-        </div>
+        <div class="form-group"><label><i class="fa-solid fa-lock"></i> كلمة المرور الجديدة</label><input type="password" id="forgot-new-pass" placeholder="6 أحرف على الأقل"/><div class="field-err" id="err-forgot-new-pass"></div></div>
+        <div class="form-group"><label><i class="fa-solid fa-lock"></i> تأكيد كلمة المرور الجديدة</label><input type="password" id="forgot-new-pass2" placeholder="أعد إدخال كلمة المرور"/><div class="field-err" id="err-forgot-new-pass2"></div></div>
         <button class="btn-submit" onclick="resetUserPassword()"><i class="fa-solid fa-key"></i> حفظ كلمة المرور الجديدة</button>
       </div>
     </div>
-    
     <span class="back-link" onclick="closeAuth()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</span>
   </div>
 </div>
 
+<!-- ALERT MODAL -->
 <div id="alert-modal">
   <div class="alert-box">
-    <div class="alert-icon"><i class="fa-solid fa-circle-info"></i></div>
-    <p id="alert-msg"></p>
+    <div style="font-size:2.5rem;color:var(--gold);margin-bottom:10px"><i class="fa-solid fa-circle-info"></i></div>
+    <p id="alert-msg" style="white-space:pre-line;margin-bottom:4px"></p>
     <button onclick="closeAlert()">فهمت</button>
   </div>
 </div>
 
-<!-- EVALUATION MODAL (FOR AREA MANAGER) -->
-<div id="eval-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:35000;align-items:center;justify-content:center">
-  <div class="exam-box" style="max-width:600px">
-    <h3 style="color:var(--brown);margin-bottom:14px;font-weight:800"><i class="fa-solid fa-star-half-stroke"></i> تقييم الطبيب الميداني (من 100 نقطة)</h3>
+<!-- EVALUATION MODAL -->
+<div id="eval-modal">
+  <div class="eval-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="color:var(--brown);font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:8px"><i class="fa-solid fa-star-half-stroke"></i> تقييم الطبيب الميداني (من 100)</h3>
+      <button onclick="document.getElementById('eval-modal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
     <input type="hidden" id="eval-target-username"/>
-    
+    <div style="background:var(--sand);padding:10px 14px;border-radius:8px;margin-bottom:14px;font-weight:700;color:var(--brown)" id="eval-doctor-name"></div>
     <div class="eval-criterion">
       <div class="eval-lbl"><span>1. سرعة الاستجابة للبلاغات</span><span id="score-val-1">20 / 20</span></div>
       <input type="range" class="eval-input" id="eval-q1" min="0" max="20" value="20" oninput="updateEvalCalc()"/>
+      <div class="eval-guide">20=استجابة وسرعة وصول دقيقة (مسافة 5 متر) | 16=جيد | 12=متوسط | 8=تأخير | 4=ضعيف</div>
     </div>
     <div class="eval-criterion">
       <div class="eval-lbl"><span>2. الالتزام بمواعيد الحملات</span><span id="score-val-2">10 / 10</span></div>
       <input type="range" class="eval-input" id="eval-q2" min="0" max="10" value="10" oninput="updateEvalCalc()"/>
+      <div class="eval-guide">10=حضور مبكر | 8=تأخير بسيط | 6=تأخير متكرر | 4=غياب | 0-2=عدم التزام</div>
     </div>
     <div class="eval-criterion">
-      <div class="eval-lbl"><span>3. دقة التعامل مع الحالة وجودة التوثيق والتقرير</span><span id="score-val-3">35 / 35</span></div>
+      <div class="eval-lbl"><span>3. دقة التعامل وجودة التوثيق والتقرير</span><span id="score-val-3">35 / 35</span></div>
       <input type="range" class="eval-input" id="eval-q3" min="0" max="35" value="35" oninput="updateEvalCalc()"/>
+      <div class="eval-guide">35=توثيق كامل للتقرير | 25=جيد | 15=متوسط | أقل=أخطاء وبيانات ناقصة</div>
     </div>
     <div class="eval-criterion">
-      <div class="eval-lbl"><span>4. الالتزام بتتعليمات مدير المنطقة</span><span id="score-val-4">15 / 15</span></div>
+      <div class="eval-lbl"><span>4. الالتزام بتعليمات مدير المنطقة</span><span id="score-val-4">15 / 15</span></div>
       <input type="range" class="eval-input" id="eval-q4" min="0" max="15" value="15" oninput="updateEvalCalc()"/>
+      <div class="eval-guide">15=التزام تام | 12=مخالفات نادرة | 9=متكررة | 6=عدم التزام | 3=تجاهل</div>
     </div>
     <div class="eval-criterion">
       <div class="eval-lbl"><span>5. حسن التعامل مع المواطنين</span><span id="score-val-5">10 / 10</span></div>
       <input type="range" class="eval-input" id="eval-q5" min="0" max="10" value="10" oninput="updateEvalCalc()"/>
+      <div class="eval-guide">10=أسلوب راقٍ محترم | 8=جيد | 6=مقبول | 4=شكاوى | 0-2=سلوك غير مهني</div>
     </div>
     <div class="eval-criterion">
       <div class="eval-lbl"><span>6. التعاون والالتزام مع الفريق</span><span id="score-val-6">10 / 10</span></div>
       <input type="range" class="eval-input" id="eval-q6" min="0" max="10" value="10" oninput="updateEvalCalc()"/>
+      <div class="eval-guide">10=متعاون جداً | 8=جيد | 6=متوسط | 4=مشاكل | 0-2=غير متعاون</div>
     </div>
-    
-    <div style="background:var(--sand-dark);padding:12px;border-radius:10px;margin:14px 0;display:flex;justify-content:space-between;align-items:center;font-weight:800">
+    <div style="background:var(--sand-dark);padding:14px;border-radius:10px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;font-weight:800">
       <span>التقييم الإجمالي النهائي:</span>
-      <span id="eval-total-score" style="font-size:1.3rem;color:var(--gold-dark)">100 / 100</span>
+      <span id="eval-total-score" style="font-size:1.4rem;color:var(--gold-dark)">100 / 100</span>
     </div>
-    
-    <button class="btn-submit" onclick="saveDoctorEvaluation()"><i class="fa-solid fa-floppy-disk"></i> حفظ التقييم</button>
-    <button onclick="document.getElementById('eval-modal').style.display='none'" style="background:var(--sand-dark);width:100%;padding:10px;border:none;border-radius:9px;font-weight:700;margin-top:8px">إلغاء</button>
+    <div class="form-group">
+      <label><i class="fa-solid fa-comment"></i> ملاحظة للطبيب</label>
+      <textarea id="eval-notes" placeholder="أكتب ملاحظاتك للطبيب الميداني هنا..." style="min-height:80px"></textarea>
+    </div>
+    <button class="btn-submit" onclick="saveDoctorEvaluation()"><i class="fa-solid fa-floppy-disk"></i> حفظ التقييم والملاحظة</button>
+    <button onclick="document.getElementById('eval-modal').style.display='none'" style="background:var(--sand-dark);width:100%;padding:10px;border:none;border-radius:9px;font-weight:700;margin-top:8px;cursor:pointer">إلغاء</button>
   </div>
 </div>
 
-<!-- CHAT VIEW MODAL -->
-<div id="chat-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:35000;align-items:center;justify-content:center">
+<!-- CHAT MODAL -->
+<div id="chat-modal">
   <div class="chat-modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--sand-dark);padding-bottom:10px">
       <h3 style="color:var(--brown)" id="chat-title"><i class="fa-solid fa-comments"></i> سجل المحادثات</h3>
@@ -336,151 +426,347 @@
     </div>
     <div class="chat-msgs-list" id="chat-messages-container"></div>
     <div style="display:flex;gap:10px">
-      <input type="text" id="chat-reply-input" placeholder="اكتب رسالتك هنا..." style="flex:1;padding:10px;border:1px solid var(--sand-dark);border-radius:8px"/>
-      <button onclick="sendChatMessage()" class="btn-submit" style="width:auto;margin:0;padding:10px 20px"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+      <input type="text" id="chat-reply-input" placeholder="اكتب رسالتك هنا..." style="flex:1;padding:10px;border:1px solid var(--sand-dark);border-radius:8px;font-family:inherit"/>
+      <button onclick="sendChatMessage()" class="btn btn-gold" style="padding:10px 20px"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
 </div>
 
+<!-- INCIDENT DETAIL MODAL -->
+<div id="incident-modal">
+  <div class="incident-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="color:var(--brown);font-weight:800;display:flex;align-items:center;gap:8px"><i class="fa-solid fa-triangle-exclamation"></i> تفاصيل البلاغ</h3>
+      <button onclick="closeIncidentModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="incident-detail-content"></div>
+    <div id="incident-star-section" style="display:none;margin-top:16px;border-top:2px solid var(--sand-dark);padding-top:14px">
+      <div style="font-weight:800;color:var(--brown);margin-bottom:8px"><i class="fa-solid fa-star"></i> تقييم أداء الطبيب الميداني في هذا البلاغ (بالنجوم):</div>
+      <div class="star-rating" id="incident-stars">
+        <i class="fa-solid fa-star star" onclick="setIncidentStar(1)"></i>
+        <i class="fa-solid fa-star star" onclick="setIncidentStar(2)"></i>
+        <i class="fa-solid fa-star star" onclick="setIncidentStar(3)"></i>
+        <i class="fa-solid fa-star star" onclick="setIncidentStar(4)"></i>
+        <i class="fa-solid fa-star star" onclick="setIncidentStar(5)"></i>
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label><i class="fa-solid fa-comment-dots"></i> إضافة ملاحظة للطبيب الميداني على هذا البلاغ</label>
+        <textarea id="incident-note-input" placeholder="اكتب ملاحظتك للطبيب..." style="min-height:70px"></textarea>
+      </div>
+      <button class="btn btn-gold" onclick="saveIncidentRating()" style="width:100%;margin-top:8px;padding:10px"><i class="fa-solid fa-floppy-disk"></i> حفظ التقييم والملاحظة</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLATFORM -->
 <div id="platform">
   <div class="topbar">
-    <div class="brand"><img id="top-logo" src="" alt="" onerror="this.style.display='none'"/> رفيق الطريق</div>
-    <div class="user-info"><span style="font-size:0.93rem" id="top-username"></span><button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button></div>
+    <div class="brand"><img id="top-logo" src="" alt="" onerror="this.style.display='none'" style="height:32px;border-radius:50%;margin-left:8px"/> رفيق الطريق</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:0.93rem;color:#f5deb3" id="top-username"></span>
+      <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+    </div>
   </div>
-  
+
   <div class="dashboard">
-    <!-- DYNAMIC ROLE BANNER & NAV -->
     <div class="role-header-banner">
       <div>
         <div class="role-title-txt" id="user-role-display"><i class="fa-solid fa-user-doctor"></i> طبيب بيطري</div>
         <div style="font-size:0.9rem;color:var(--text-muted);margin-top:4px" id="user-location-display">المحافظة والمركز</div>
       </div>
-      <div class="role-scope-badge" id="role-scope-badge">النطاق: كامل الجمهوريه</div>
+      <div class="role-scope-badge" id="role-scope-badge">النطاق: كامل الجمهورية</div>
     </div>
 
-    <!-- MAIN ROLE NAV TABS -->
-    <div class="nav-bar-tabs">
-      <button class="nav-role-tab active" onclick="switchRoleTab('tab-main')"><i class="fa-solid fa-house"></i> الرئيسية</button>
-      <button class="nav-role-tab" onclick="switchRoleTab('tab-settings')"><i class="fa-solid fa-gear"></i> الإعدادات</button>
-      <button class="nav-role-tab" onclick="switchRoleTab('tab-account')"><i class="fa-solid fa-user"></i> الحساب</button>
+    <!-- FACEBOOK STYLE NAVBAR WITH ICONS & ACTIVE EFFECT -->
+    <div class="fb-nav-tabs">
+      <button class="fb-tab active" id="fb-tab-main" onclick="switchRoleTab('tab-main')">
+        <i class="fa-solid fa-house"></i>
+        <span>الرئيسية</span>
+      </button>
+      <button class="fb-tab" id="fb-tab-settings" onclick="switchRoleTab('tab-settings')">
+        <i class="fa-solid fa-gear"></i>
+        <span>الإعدادات</span>
+      </button>
+      <button class="fb-tab" id="fb-tab-account" onclick="switchRoleTab('tab-account')">
+        <i class="fa-solid fa-user"></i>
+        <span>الحساب</span>
+      </button>
     </div>
 
-    <!-- TAB CONTENT PANES -->
-    <div id="tab-main" class="tab-pane active">
-      <!-- Dynamic Content rendered via JS according to Role -->
-      <div id="role-dynamic-main"></div>
-    </div>
-
-    <div id="tab-settings" class="tab-pane">
-      <div class="panel-card">
-        <h3><i class="fa-solid fa-sliders"></i> إعدادات المنصة والحساب</h3>
-        <div class="form-group" style="max-width:300px"><label>لغة التطبيق</label><select><option>العربية (Arabic)</option><option>English</option></select></div>
-        
-        <div class="form-divider"><span><i class="fa-solid fa-user-nurse"></i> دليل الأطباء للتواصل</span></div>
-        <button class="btn-submit" style="max-width:280px" onclick="openDoctorsDirectory()"><i class="fa-solid fa-users-viewfinder"></i> دليل الأطباء والزملاء</button>
-        
-        <div id="area-manager-campaign-section" style="display:none;margin-top:24px;border-top:2px dashed var(--gold);padding-top:20px">
-          <h3><i class="fa-solid fa-bullhorn"></i> إنشاء وتكليف حملة ميدانية جديدة</h3>
-          <div class="form-group"><label>اسم الحملة الميدانية</label><input type="text" id="camp-name" placeholder="حملة التطعيم والتعقيم بالمركز"/></div>
-          <div class="form-group"><label>الوقت والتاريخ</label><input type="datetime-local" id="camp-datetime"/></div>
-          <div class="form-group"><label>خريطة نطاق الحملة بالمركز</label>
-            <div class="map-sim"><i class="fa-solid fa-location-dot map-pin"></i><span style="font-weight:800;color:var(--brown)">خريطة نطاق المركز المحددة للحملة الميدانية</span></div>
-          </div>
-          <button class="btn-submit" onclick="createCampaign()"><i class="fa-solid fa-plus"></i> جدولة وتكليف الحملة</button>
-          
-          <div style="margin-top:20px">
-            <h4 style="color:var(--brown);margin-bottom:10px"><i class="fa-solid fa-clipboard-user"></i> جدول حضور وغياب الأطباء للحملة</h4>
-            <div id="campaign-attendance-list"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <div id="tab-main" class="tab-pane active"><div id="role-dynamic-main"></div></div>
+    <div id="tab-settings" class="tab-pane"><div id="role-dynamic-settings"></div></div>
     <div id="tab-account" class="tab-pane">
-      <div class="panel-card">
+      <div class="settings-section">
         <h3><i class="fa-solid fa-id-card"></i> البيانات الشخصية للحساب</h3>
         <div class="info-grid" id="account-info-grid"></div>
-        <button class="btn-submit" style="background:var(--error);max-width:240px;margin-top:20px" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+        <button class="btn-submit" style="background:var(--error);max-width:240px;margin-top:24px" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const LOGO_SRC='';
 const GOV_DATA={
-  'القاهرة': ['مدينة نصر','المعادي','مصر الجديدة','شبرا','الزيتون','حلوان','المرج','التجمع الخامس','القاهرة الجديدة'],
-  'الجيزة': ['الدقي','المهندسين','الهرم','فيصل','العجوزة','6 أكتوبر','الشيخ زايد','البدرشين'],
-  'الإسكندرية': ['المنتزه','الرمل','سيدي جابر','محرم بك','العجمي','العامرية','برج العرب'],
-  'بورسعيد': ['حي الشرق','حي العرب','حي المناخ','حي الضواحي','حي الزهور','بورفؤاد'],
-  'الشرقية': ['الزقازيق','العاشر من رمضان','منيا القمح','بلبيس','أبو كبير','فاقوس'],
-  'الغربية': ['طنطا','المحلة الكبرى','زفتى','كفر الزيات','السنطة'],
-  'المنوفية': ['شبين الكوم','منوف','مدينة السادات','أشمون','قويسنا'],
-  'القليوبية': ['بنها','شبرا الخيمة','العبور','القناطر الخيرية','طوخ'],
-  'الدقهلية': ['المنصورة','ميت غمر','السنبلاوين','دكرنس','طلخا'],
-  'البحيرة': ['دمنهور','كفر الدوار','إيتاي البارود','رشيد'],
-  'كفر الشيخ': ['كفر الشيخ','دسوق','بيلا','بلطيم'],
-  'دمياط': ['دمياط','دمياط الجديدة','رأس البر','فارسكور'],
-  'الإسماعيلية': ['الإسماعيلية','فايد','التل الكبير','القنطرة'],
-  'السويس': ['السويس','فيصل','عتاقة','الجناين'],
-  'الفيوم': ['الفيوم','طامية','سنورس','إطسا'],
-  'بني سويف': ['بني سويف','الواسطى','ناصر','ببا'],
-  'المنيا': ['المنيا','ملوي','مغاغة','بني مزار'],
-  'أسيوط': ['أسيوط','ديروط','منفلوط','أبو تيج'],
-  'سوهاج': ['سوهاج','أخميم','جرجا','طهطا'],
-  'قنا': ['قنا','نجع حمادي','قوص','دشنا'],
-  'الأقصر': ['الأقصر','إسنا','أرمنت'],
-  'أسوان': ['أسوان','إدفو','كوم أمبو'],
-  'البحر الأحمر': ['الغردقة','سفاجا','القصير','مرسى علم'],
-  'الوادي الجديد': ['الخارجة','الداخلة','الفرافرة'],
-  'مطروح': ['مرسى مطروح','العلمين','الضبعة','سيوة'],
-  'شمال سيناء': ['العريش','بئر العبد','الشيخ زويد','رفح'],
-  'جنوب سيناء': ['شرم الشيخ','الطور','دهب','نويبع']
+  'القاهرة':['مدينة نصر','المعادي','مصر الجديدة','شبرا','الزيتون','حلوان','المرج','التجمع الخامس','القاهرة الجديدة'],
+  'الجيزة':['الدقي','المهندسين','الهرم','فيصل','العجوزة','6 أكتوبر','الشيخ زايد','البدرشين'],
+  'الإسكندرية':['المنتزه','الرمل','سيدي جابر','محرم بك','العجمي','العامرية','برج العرب'],
+  'بورسعيد':['حي الشرق','حي العرب','حي المناخ','حي الضواحي','حي الزهور','بورفؤاد'],
+  'الشرقية':['الزقازيق','العاشر من رمضان','منيا القمح','بلبيس','أبو كبير','فاقوس'],
+  'الغربية':['طنطا','المحلة الكبرى','زفتى','كفر الزيات','السنطة'],
+  'المنوفية':['شبين الكوم','منوف','مدينة السادات','أشمون','قويسنا'],
+  'القليوبية':['بنها','شبرا الخيمة','العبور','القناطر الخيرية','طوخ'],
+  'الدقهلية':['المنصورة','ميت غمر','السنبلاوين','دكرنس','طلخا'],
+  'البحيرة':['دمنهور','كفر الدوار','إيتاي البارود','رشيد'],
+  'كفر الشيخ':['كفر الشيخ','دسوق','بيلا','بلطيم'],
+  'دمياط':['دمياط','دمياط الجديدة','رأس البر','فارسكور'],
+  'الإسماعيلية':['الإسماعيلية','فايد','التل الكبير','القنطرة'],
+  'السويس':['السويس','فيصل','عتاقة','الجناين'],
+  'الفيوم':['الفيوم','طامية','سنورس','إطسا'],
+  'بني سويف':['بني سويف','الواسطى','ناصر','ببا'],
+  'المنيا':['المنيا','ملوي','مغاغة','بني مزار'],
+  'أسيوط':['أسيوط','ديروط','منفلوط','أبو تيج'],
+  'سوهاج':['سوهاج','أخميم','جرجا','طهطا'],
+  'قنا':['قنا','نجع حمادي','قوص','دشنا'],
+  'الأقصر':['الأقصر','إسنا','أرمنت'],
+  'أسوان':['أسوان','إدفو','كوم أمبو'],
+  'البحر الأحمر':['الغردقة','سفاجا','القصير','مرسى علم'],
+  'الوادي الجديد':['الخارجة','الداخلة','الفرافرة'],
+  'مطروح':['مرسى مطروح','العلمين','الضبعة','سيوة'],
+  'شمال سيناء':['العريش','بئر العبد','الشيخ زويد','رفح'],
+  'جنوب سيناء':['شرم الشيخ','الطور','دهب','نويبع']
 };
 const GOVS_ALL=Object.keys(GOV_DATA);
+const CLOUD_SYNC_URL='https://rafeeq-eltareeq-default-rtdb.firebaseio.com/users.json';
+const STORE_KEY='rafiq_users';
+
 let currentRole=null,currentTab='register';
-let forgotTargetUser = null;
-let currentChatTarget = '';
+let forgotTargetUser=null,currentChatTarget='',currentIncidentId=null,incidentStarValue=0,activeRoleKey='field_vet';
 
-const CLOUD_SYNC_URL = 'https://rafeeq-eltareeq-default-rtdb.firebaseio.com/users.json';
-
-function cleanStr(str) {
-  return (str || '').toString().trim().toLowerCase().replace(/[\s\-\+]/g, '');
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  if(LOGO_SRC){document.getElementById('logo-img').src=LOGO_SRC;document.getElementById('top-logo').src=LOGO_SRC;}
-  populateGovs('d-gov');populateGovs('c-gov');
-  fetchCloudUsers();
-  const sess=getSession();if(sess)enterPlatform(sess);
-});
-
-function populateGovs(id){const s=document.getElementById(id);GOVS_ALL.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;s.appendChild(o);});}
-
+// GLOBAL MODAL & AUTH FUNCTIONS DEFINED FIRST
 function openAuth(role){
-  currentRole=role;const isDoc=role==='doctor';
-  document.getElementById('auth-title').innerHTML=isDoc?'<i class="fa-solid fa-stethoscope"></i> حساب الطبيب البيطري':'<i class="fa-solid fa-house-user"></i> حساب المواطن';
-  document.getElementById('auth-sub').textContent=isDoc?'أطباء بيطريون وطلاب بيطرة فقط':'مرحباً بك في مجتمع رفيق الطريق';
-  document.getElementById('doctor-fields').style.display=isDoc?'':'none';
-  document.getElementById('citizen-fields').style.display=!isDoc?'':'none';
-  switchTab('register');document.getElementById('auth-overlay').classList.add('active');
-  checkMobileHandle();
+  try {
+    currentRole = role;
+    const isDoc = (role === 'doctor');
+    
+    const titleEl = document.getElementById('auth-title');
+    if (titleEl) {
+      titleEl.innerHTML = isDoc 
+        ? '<i class="fa-solid fa-stethoscope"></i> حساب الطبيب البيطري' 
+        : '<i class="fa-solid fa-house-user"></i> حساب المواطن';
+    }
+    
+    const subEl = document.getElementById('auth-sub');
+    if (subEl) {
+      subEl.textContent = isDoc ? 'أطباء بيطريون وطلاب بيطرة فقط' : 'مرحباً بك في مجتمع رفيق الطريق';
+    }
+    
+    const dFields = document.getElementById('doctor-fields');
+    if (dFields) dFields.style.display = isDoc ? 'block' : 'none';
+    
+    const cFields = document.getElementById('citizen-fields');
+    if (cFields) cFields.style.display = isDoc ? 'none' : 'block';
+    
+    switchTab('register');
+    
+    const overlay = document.getElementById('auth-overlay');
+    if (overlay) {
+      overlay.classList.add('active');
+      overlay.style.display = 'flex';
+      overlay.style.opacity = '1';
+      overlay.style.visibility = 'visible';
+    }
+    
+    const h = document.getElementById('modal-handle');
+    if (h) h.style.display = (window.innerWidth <= 768) ? 'block' : 'none';
+  } catch(err) {
+    console.error('openAuth error:', err);
+    const overlay = document.getElementById('auth-overlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      overlay.classList.add('active');
+    }
+  }
 }
+window.openAuth = openAuth;
 
-function closeAuth(){document.getElementById('auth-overlay').classList.remove('active');}
-function handleOverlayClick(e){if(e.target===document.getElementById('auth-overlay'))closeAuth();}
-function checkMobileHandle(){const h=document.getElementById('modal-handle');if(h)h.style.display=window.innerWidth<=768?'block':'none';}
-window.addEventListener('resize',checkMobileHandle);
+function closeAuth(){
+  try {
+    const overlay = document.getElementById('auth-overlay');
+    if (overlay) {
+      overlay.classList.remove('active');
+      overlay.style.display = 'none';
+    }
+  } catch(e){}
+}
+window.closeAuth = closeAuth;
+
+function handleOverlayClick(e){
+  try {
+    if (e && e.target === document.getElementById('auth-overlay')) closeAuth();
+  } catch(err){}
+}
+window.handleOverlayClick = handleOverlayClick;
 
 function switchTab(tab){
-  currentTab=tab;
-  document.getElementById('auth-tab-bar').style.display='';
-  document.getElementById('register-form').style.display=tab==='register'?'':'none';
-  document.getElementById('login-form').style.display=tab==='login'?'':'none';
-  document.getElementById('forgot-form').style.display='none';
-  document.getElementById('tab-register').classList.toggle('active',tab==='register');
-  document.getElementById('tab-login').classList.toggle('active',tab==='login');
-  clearErrors();
+  try {
+    currentTab = tab;
+    const tabBar = document.getElementById('auth-tab-bar');
+    if (tabBar) tabBar.style.display = 'flex';
+    
+    const regForm = document.getElementById('register-form');
+    if (regForm) regForm.style.display = (tab === 'register') ? 'block' : 'none';
+    
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) loginForm.style.display = (tab === 'login') ? 'block' : 'none';
+    
+    const forgotForm = document.getElementById('forgot-form');
+    if (forgotForm) forgotForm.style.display = 'none';
+    
+    const tabReg = document.getElementById('tab-register');
+    if (tabReg) tabReg.classList.toggle('active', tab === 'register');
+    
+    const tabLog = document.getElementById('tab-login');
+    if (tabLog) tabLog.classList.toggle('active', tab === 'login');
+    
+    clearErrors();
+  } catch(err) {
+    console.error('switchTab error:', err);
+  }
+}
+window.switchTab = switchTab;
+
+document.addEventListener('DOMContentLoaded',()=>{
+  try { populateGovs('d-gov'); } catch(e){}
+  try { populateGovs('c-gov'); } catch(e){}
+  try { fetchCloudUsers(); } catch(e){}
+  try { fetchDeviceIp(); } catch(e){}
+  
+  // Attach direct fallback click listeners to all gateway buttons
+  document.querySelectorAll('.gw-btn.doctor').forEach(btn => {
+    btn.onclick = function(e) {
+      if(e) e.preventDefault();
+      openAuth('doctor');
+    };
+  });
+  document.querySelectorAll('.gw-btn.citizen').forEach(btn => {
+    btn.onclick = function(e) {
+      if(e) e.preventDefault();
+      openAuth('citizen');
+    };
+  });
+
+  try {
+    const sess = getSession();
+    if (sess && sess.username && sess.role) {
+      const users = getUsers();
+      const liveUser = users.find(u => cleanStr(u.username) === cleanStr(sess.username)) || sess;
+      const now = Date.now();
+      if (liveUser.isBanned) {
+        clearSession();
+        showAlert('حسابك محظور نهائياً بواسطة الإدارة.');
+        return;
+      }
+      if (liveUser.suspendedUntil && liveUser.suspendedUntil > now) {
+        startLockCountdown(liveUser.suspendedUntil);
+        return;
+      }
+      enterPlatform(liveUser);
+    } else {
+      clearSession();
+      const gw = document.getElementById('gateway');
+      if (gw) gw.style.display = 'flex';
+      const pf = document.getElementById('platform');
+      if (pf) pf.classList.remove('active');
+    }
+  } catch(e) {
+    console.error('Session init error:', e);
+    clearSession();
+  }
+});
+
+function cleanStr(str){return(str||'').toString().trim().toLowerCase().replace(/[\s\-\+]/g,'');}
+function v(id){return(document.getElementById(id)||{}).value?.trim()||'';}
+function setErr(id,msg){const e=document.getElementById(id);if(e)e.textContent=msg;}
+function clearErrors(){document.querySelectorAll('.field-err').forEach(e=>e.textContent='');}
+function showAlert(msg){const m=document.getElementById('alert-modal');const t=document.getElementById('alert-msg');if(t)t.textContent=msg;if(m)m.classList.add('active');}
+function closeAlert(){const m=document.getElementById('alert-modal');if(m)m.classList.remove('active');}
+function getRoleTitle(r){const m={platform_director:'رئيس المنصة',sector_director:'رئيس القطاع',area_manager:'مدير المنطقة',field_vet:'طبيب بيطري ميداني'};return m[r]||'طبيب بيطري';}
+function getRoleIcon(r){const m={platform_director:'fa-crown',sector_director:'fa-building-shield',area_manager:'fa-map-location-dot',field_vet:'fa-stethoscope'};return m[r]||'fa-user-doctor';}
+
+function getUsers(){try{return JSON.parse(localStorage.getItem(STORE_KEY))||[];}catch{return[];}}
+function saveUsers(u){
+  localStorage.setItem(STORE_KEY,JSON.stringify(u));
+  try{fetch(CLOUD_SYNC_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(u)}).catch(()=>{});}catch(e){}
+}
+function fetchCloudUsers(){
+  try{fetch(CLOUD_SYNC_URL).then(r=>r.json()).then(data=>{
+    if(data){let arr=Array.isArray(data)?data:Object.values(data);if(arr.length>0){const local=getUsers();const merged=[...local];arr.forEach(cu=>{const i=merged.findIndex(x=>cleanStr(x.username)===cleanStr(cu.username));if(i>-1)merged[i]={...merged[i],...cu};else merged.push(cu);});localStorage.setItem(STORE_KEY,JSON.stringify(merged));}}
+  }).catch(()=>{});}catch(e){}
+}
+
+function getSession(){
+  try{
+    const s1 = localStorage.getItem('rafiq_session');
+    const s2 = sessionStorage.getItem('rafiq_session');
+    const s = JSON.parse(s1)||JSON.parse(s2);
+    if(s && typeof s==='object' && s.username && s.role){
+      return s;
+    }
+    return null;
+  }catch{return null;}
+}
+function saveSession(d){
+  try{
+    if(!d || !d.username || !d.role) return;
+    const ip=localStorage.getItem('rafiq_device_ip')||'';
+    if(ip)d.deviceIp=ip;
+    localStorage.setItem('rafiq_session',JSON.stringify(d));
+    sessionStorage.setItem('rafiq_session',JSON.stringify(d));
+  }catch(e){}
+}
+function clearSession(){
+  localStorage.removeItem('rafiq_session');
+  sessionStorage.removeItem('rafiq_session');
+}
+
+function fetchDeviceIp(){
+  try{
+    fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(data=>{
+      if(data&&data.ip){
+        localStorage.setItem('rafiq_device_ip',data.ip);
+        const sess=getSession();
+        if(sess){sess.deviceIp=data.ip;saveSession(sess);}
+      }
+    }).catch(()=>{});
+  }catch(e){}
+}
+
+function populateGovs(id){
+  const s=document.getElementById(id);
+  if(!s) return;
+  s.innerHTML='';
+  const defOpt=document.createElement('option');defOpt.value='';defOpt.textContent='-- اختر المحافظة --';s.appendChild(defOpt);
+  GOVS_ALL.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;s.appendChild(o);});
+}
+function onGovChange(px){
+  const s=document.getElementById(px+'-gov');if(!s)return;
+  const gov=s.value;
+  const dw=document.getElementById(px+'-district-wrap');if(!dw)return;
+  resetSel(px+'-district','-- اختر المركز/القسم --');dw.style.display='none';
+  if(!gov)return;const data=GOV_DATA[gov];
+  if(data){const ds=document.getElementById(px+'-district');if(!ds)return;data.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;ds.appendChild(o);});dw.style.display='';}
+}
+function resetSel(id,ph){const s=document.getElementById(id);if(!s)return;s.innerHTML='';const o=document.createElement('option');o.value='';o.textContent=ph;s.appendChild(o);}
+function onAcademicChange(){
+  const val=document.querySelector('input[name="d-status"]:checked');
+  const sSec=document.getElementById('student-section');if(sSec)sSec.style.display=(val&&val.value==='student')?'':'none';
+  const gSec=document.getElementById('graduate-section');if(gSec)gSec.style.display=(val&&val.value==='graduate')?'':'none';
+}
+function previewFile(input,pid){
+  const p=document.getElementById(pid);if(!p)return;
+  if(input.files&&input.files[0]&&input.files[0].type.startsWith('image/')){
+    const r=new FileReader();r.onload=e=>{p.src=e.target.result;p.style.display='block';};r.readAsDataURL(input.files[0]);
+  }
 }
 
 function showForgotPassword(){
@@ -490,591 +776,685 @@ function showForgotPassword(){
   document.getElementById('forgot-form').style.display='block';
   document.getElementById('forgot-step-1').style.display='block';
   document.getElementById('forgot-step-2').style.display='none';
-  forgotTargetUser = null;
-  clearErrors();
+  forgotTargetUser=null;clearErrors();
 }
 
 function verifyForgotUser(){
   clearErrors();
-  const rawQuery = v('forgot-search-id');
-  const query = cleanStr(rawQuery);
-  if(!query){ setErr('err-forgot-search','برجاء إدخال بيانات الحساب'); return; }
-  
-  const users = getUsers();
-  const target = users.find(u => 
-    cleanStr(u.username) === query ||
-    cleanStr(u.phone) === query ||
-    cleanStr(u.email) === query
-  );
-  
-  if(!target){
-    setErr('err-forgot-search','لم يتم العثور على حساب بهذه البيانات! يرجى إنشاء الحساب أولاً.');
-    return;
-  }
-  
-  forgotTargetUser = target;
-  document.getElementById('forgot-found-username').textContent = target.username;
+  const query=cleanStr(v('forgot-search-id'));
+  if(!query){setErr('err-forgot-search','برجاء إدخال بيانات الحساب');return;}
+  const users=getUsers();
+  const target=users.find(u=>cleanStr(u.username)===query||cleanStr(u.phone)===query||cleanStr(u.email)===query);
+  if(!target){setErr('err-forgot-search','لم يتم العثور على حساب بهذه البيانات!');return;}
+  forgotTargetUser=target;
+  document.getElementById('forgot-found-username').textContent=target.username;
   document.getElementById('forgot-step-1').style.display='none';
   document.getElementById('forgot-step-2').style.display='block';
 }
 
 function resetUserPassword(){
-  clearErrors();
-  const p1 = v('forgot-new-pass');
-  const p2 = v('forgot-new-pass2');
-  
-  if(p1.length < 6){ setErr('err-forgot-new-pass','كلمة المرور يجب أن تكون 6 أحرف على الأقل'); return; }
-  if(p1 !== p2){ setErr('err-forgot-new-pass2','كلمتا المرور غير متطابقتين'); return; }
-  
-  const users = getUsers();
-  const idx = users.findIndex(u => cleanStr(u.username) === cleanStr(forgotTargetUser.username));
-  if(idx > -1){
-    users[idx].pass = p1;
-    saveUsers(users);
-    showAlert('تم تغيير كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.');
-    switchTab('login');
-  }
+  clearErrors();const p1=v('forgot-new-pass'),p2=v('forgot-new-pass2');
+  if(p1.length<6){setErr('err-forgot-new-pass','كلمة المرور يجب أن تكون 6 أحرف على الأقل');return;}
+  if(p1!==p2){setErr('err-forgot-new-pass2','كلمتا المرور غير متطابقتين');return;}
+  const users=getUsers();const idx=users.findIndex(u=>cleanStr(u.username)===cleanStr(forgotTargetUser.username));
+  if(idx>-1){users[idx].pass=p1;saveUsers(users);showAlert('تم تغيير كلمة المرور بنجاح!');switchTab('login');}
 }
-
-function onGovChange(px){
-  const gov=document.getElementById(px+'-gov').value;
-  const dw=document.getElementById(px+'-district-wrap');
-  resetSel(px+'-district','-- اختر المركز/القسم --');
-  dw.style.display='none';
-  if(!gov)return;
-  const data=GOV_DATA[gov];
-  if(data){
-    const ds=document.getElementById(px+'-district');
-    data.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;ds.appendChild(o);});
-    dw.style.display='';
-  }
-}
-
-function resetSel(id,ph){const s=document.getElementById(id);s.innerHTML='';const o=document.createElement('option');o.value='';o.textContent=ph;s.appendChild(o);}
-
-function onAcademicChange(){
-  const val=document.querySelector('input[name="d-status"]:checked');
-  document.getElementById('student-section').style.display=(val&&val.value==='student')?'':'none';
-  document.getElementById('graduate-section').style.display=(val&&val.value==='graduate')?'':'none';
-}
-
-function previewFile(input,pid){
-  const p=document.getElementById(pid);
-  if(input.files&&input.files[0]&&input.files[0].type.startsWith('image/')){
-    const r=new FileReader();r.onload=e=>{p.src=e.target.result;p.style.display='block';};r.readAsDataURL(input.files[0]);
-  }
-}
-
-function setErr(id,msg){const e=document.getElementById(id);if(e)e.textContent=msg;}
-function clearErrors(){document.querySelectorAll('.field-err').forEach(e=>e.textContent='');}
-
-const STORE_KEY='rafiq_users';
-function getUsers(){try{return JSON.parse(localStorage.getItem(STORE_KEY))||[];}catch{return[];}}
-function saveUsers(u){
-  localStorage.setItem(STORE_KEY,JSON.stringify(u));
-  try {
-    fetch(CLOUD_SYNC_URL, {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(u)
-    }).catch(e=>console.log(e));
-  } catch(e){}
-}
-
-function fetchCloudUsers(){
-  try {
-    fetch(CLOUD_SYNC_URL)
-      .then(res => res.json())
-      .then(cloudData => {
-        if(cloudData) {
-          let cloudArray = Array.isArray(cloudData) ? cloudData : Object.values(cloudData);
-          if(cloudArray.length > 0) {
-            const localUsers = getUsers();
-            const merged = [...localUsers];
-            cloudArray.forEach(cu => {
-              const idx = merged.findIndex(x => cleanStr(x.username) === cleanStr(cu.username));
-              if(idx > -1) merged[idx] = {...merged[idx], ...cu};
-              else merged.push(cu);
-            });
-            localStorage.setItem(STORE_KEY, JSON.stringify(merged));
-          }
-        }
-      }).catch(e=>console.log(e));
-  } catch(e){}
-}
-
-function getSession(){try{return JSON.parse(sessionStorage.getItem('rafiq_session'));}catch{return null;}}
-function saveSession(d){sessionStorage.setItem('rafiq_session',JSON.stringify(d));}
-function clearSession(){sessionStorage.removeItem('rafiq_session');}
-function v(id){return(document.getElementById(id)||{}).value?.trim()||'';}
 
 function submitRegister(){
-  clearErrors();let valid=true;
+  clearErrors();
+  let valid=true;
+  const deviceIp=localStorage.getItem('rafiq_device_ip')||'';
+  
+  // Auto-detect role from visible fields if currentRole is null
+  const isDocVisible = document.getElementById('doctor-fields').style.display !== 'none';
+  if(!currentRole) currentRole = isDocVisible ? 'doctor' : 'citizen';
+
   if(currentRole==='doctor'){
     const username=v('d-username'),email=v('d-email'),phone=v('d-phone'),dob=v('d-dob');
     const pass=v('d-pass'),pass2=v('d-pass2'),gov=v('d-gov'),district=v('d-district');
     const university=v('d-university');
     const statusEl=document.querySelector('input[name="d-status"]:checked');
     const status=statusEl?statusEl.value:'';
-    
+
     if(!username){setErr('err-d-username','اسم المستخدم مطلوب');valid=false;}
     if(!email){setErr('err-d-email','البريد الإلكتروني مطلوب');valid=false;}
     if(!phone){setErr('err-d-phone','رقم الموبايل مطلوب');valid=false;}
     if(!dob){setErr('err-d-dob','تاريخ الميلاد مطلوب');valid=false;}
-    if(pass.length<6){setErr('err-d-pass','كلمة المرور 6 أحرف على الأقل');valid=false;}
+    if(!pass||pass.length<6){setErr('err-d-pass','كلمة المرور 6 أحرف على الأقل');valid=false;}
     if(pass!==pass2){setErr('err-d-pass2','كلمة المرور غير متطابقة');valid=false;}
     if(!gov){setErr('err-d-gov','المحافظة مطلوبة');valid=false;}
     if(gov&&!district){setErr('err-d-district','المركز/القسم مطلوب');valid=false;}
     if(!university){setErr('err-d-university','الجامعة مطلوبة');valid=false;}
     if(!status){setErr('err-d-status','الوضع الأكاديمي مطلوب');valid=false;}
-    
-    let academicYear='', academicLevel='', dorm='', gradYear='';
-    
+
+    let academicYear='',academicLevel='',dorm='',gradYear='';
     if(status==='student'){
-      academicYear=v('d-year'); academicLevel=v('d-level');
+      academicYear=v('d-year');academicLevel=v('d-level');
       const dormEl=document.querySelector('input[name="d-dorm"]:checked');
       dorm=dormEl?dormEl.value:'';
       if(!academicYear){setErr('err-d-year','السنة الدراسية مطلوبة');valid=false;}
       if(!academicLevel){setErr('err-d-level','المستوى الدراسي مطلوب');valid=false;}
-    }
-    if(status==='graduate'){
+    } else if(status==='graduate'){
       gradYear=v('d-grad-year');
       if(!gradYear){setErr('err-d-grad-year','عام التخرج مطلوب');valid=false;}
     }
-    if(!valid)return;
-    const users=getUsers();
-    if(users.find(u=>cleanStr(u.username)===cleanStr(username) || (u.email && cleanStr(u.email)===cleanStr(email)))){
-      setErr('err-d-username','اسم المستخدم أو البريد مسجل بالفعل');
+
+    if(!valid){
+      showAlert('يرجى استكمال جميع البيانات المطلوبة باللون الأحمر.');
+      const firstErr=document.querySelector('.field-err:not(:empty)');
+      if(firstErr) firstErr.scrollIntoView({behavior:'smooth',block:'center'});
       return;
     }
-    
-    const user={
-      username,email,phone,dob,pass,gov,district,university,academicStatus:status,
-      academicYear,academicLevel,dorm,gradYear,
-      role:'doctor',docStep:'course',docRole:'field_vet',status:'pending',createdAt:Date.now()
-    };
-    users.push(user);saveUsers(users);saveSession(user);
-    closeAuth();enterPlatform(user);
-    showAlert('تم إنشاء حسابك بنجاح! يمكن الإدارة الآن تفعيل اعتمادك وتحديد مسمى وظيفي خاص بك.');
+
+    const users=getUsers();
+    if(users.find(u=>cleanStr(u.username)===cleanStr(username)||(u.email&&cleanStr(u.email)===cleanStr(email)))){
+      setErr('err-d-username','اسم المستخدم أو البريد مسجل بالفعل');
+      showAlert('اسم المستخدم أو البريد مسجل بالفعل!');
+      return;
+    }
+    const idFront = document.getElementById('prev-d-id-front')?.src || '';
+    const idBack = document.getElementById('prev-d-id-back')?.src || '';
+    const carnehFront = document.getElementById('prev-carneh-front')?.src || '';
+    const carnehBack = document.getElementById('prev-carneh-back')?.src || '';
+    const cert = document.getElementById('prev-cert')?.src || '';
+
+    const user={username,email,phone,dob,pass,gov,district,university,academicStatus:status,academicYear,academicLevel,dorm,gradYear,role:'doctor',docRole:'field_vet',status:'pending',deviceIp,createdAt:Date.now(),idFront,idBack,carnehFront,carnehBack,cert,evaluation:{q1:20,q2:10,q3:35,q4:15,q5:10,q6:10,total:100,notes:''}};
+    users.push(user);saveUsers(users);saveSession(user);closeAuth();enterPlatform(user);
+    showAlert('تم إنشاء حسابك وحفظ بيانات الدخول لجهازك بنجاح!\nلن تحتاج لتسجيل الدخول مرة أخرى عند زيارة المنصة.');
   } else {
     const username=v('c-username'),email=v('c-email'),phone=v('c-phone'),dob=v('c-dob');
     const pass=v('c-pass'),pass2=v('c-pass2'),gov=v('c-gov'),district=v('c-district');
-    const address=document.getElementById('c-address').value.trim();
-    
+    const address=(document.getElementById('c-address')||{}).value?.trim()||'';
+
     if(!username){setErr('err-c-username','اسم المستخدم مطلوب');valid=false;}
     if(!email){setErr('err-c-email','البريد مطلوب');valid=false;}
     if(!phone){setErr('err-c-phone','الموبايل مطلوب');valid=false;}
-    if(pass.length<6){setErr('err-c-pass','كلمة المرور 6 أحرف على الأقل');valid=false;}
-    if(pass!==pass2){setErr('err-c-pass2','غير متطابقة');valid=false;}
+    if(!pass||pass.length<6){setErr('err-c-pass','كلمة المرور 6 أحرف على الأقل');valid=false;}
+    if(pass!==pass2){setErr('err-c-pass2','كلمة المرور غير متطابقة');valid=false;}
     if(!gov){setErr('err-c-gov','المحافظة مطلوبة');valid=false;}
-    
-    if(!valid)return;
-    const users=getUsers();
-    if(users.find(u=>cleanStr(u.username)===cleanStr(username))){
-      setErr('err-c-username','الاسم مستخدم بالفعل');
+
+    if(!valid){
+      showAlert('يرجى استكمال جميع البيانات المطلوبة باللون الأحمر.');
+      const firstErr=document.querySelector('.field-err:not(:empty)');
+      if(firstErr) firstErr.scrollIntoView({behavior:'smooth',block:'center'});
       return;
     }
-    const user={username,email,phone,dob,pass,gov,district,address,role:'citizen',status:'active',createdAt:Date.now()};
+
+    const users=getUsers();
+    if(users.find(u=>cleanStr(u.username)===cleanStr(username))){
+      setErr('err-c-username','اسم المستخدم مسجل بالفعل');
+      showAlert('اسم المستخدم مسجل بالفعل!');
+      return;
+    }
+    const idFront = document.getElementById('prev-c-id-front')?.src || '';
+    const idBack = document.getElementById('prev-c-id-back')?.src || '';
+
+    const user={username,email,phone,dob,pass,gov,district,address,role:'citizen',status:'active',deviceIp,createdAt:Date.now(),idFront,idBack};
     users.push(user);saveUsers(users);saveSession(user);closeAuth();enterPlatform(user);
+    showAlert('تم إنشاء حساب المواطن بنجاح!');
   }
 }
 
 function submitLogin(){
   clearErrors();
-  const loginId = cleanStr(v('login-id'));
-  const pass = v('login-pass');
+  const loginId=cleanStr(v('login-id')),pass=v('login-pass');
   if(!loginId){setErr('err-login-id','أدخل اسم المستخدم أو الموبايل أو البريد');return;}
   if(!pass){setErr('err-login-pass','أدخل كلمة المرور');return;}
-  
   const users=getUsers();
-  const user=users.find(u=>
-    (
-      cleanStr(u.username) === loginId ||
-      cleanStr(u.phone) === loginId ||
-      cleanStr(u.email) === loginId
-    ) && u.pass === pass
-  );
-  
+  const user=users.find(u=>(cleanStr(u.username)===loginId||cleanStr(u.phone)===loginId||cleanStr(u.email)===loginId)&&u.pass===pass);
   if(!user){
-    setErr('err-login-pass','البيانات غير صحيحة!');
+    setErr('err-login-pass','اسم المستخدم أو كلمة المرور غير صحيحة!');
+    showAlert('اسم المستخدم أو كلمة المرور غير صحيحة!');
     return;
   }
-  
-  // Check Account Lock/Suspension Status
-  const now = Date.now();
-  if(user.isBanned){
-    showAlert('حسابك محظور نهائياً بواسطة إدارة المنصة.');
-    return;
-  }
-  if(user.suspendedUntil && user.suspendedUntil > now){
-    startLockCountdown(user.suspendedUntil);
-    return;
-  }
-  
+  const now=Date.now();
+  if(user.isBanned){showAlert('حسابك محظور نهائياً بواسطة الإدارة.');return;}
+  if(user.suspendedUntil&&user.suspendedUntil>now){startLockCountdown(user.suspendedUntil);return;}
+  user.deviceIp=localStorage.getItem('rafiq_device_ip')||user.deviceIp||'';
+  saveUsers(users);
   saveSession(user);
   closeAuth();
   enterPlatform(user);
 }
 
 function startLockCountdown(targetTime){
-  const modal = document.getElementById('lock-notice-modal');
-  const timerDisp = document.getElementById('lock-timer-display');
-  const msg = document.getElementById('lock-notice-msg');
-  msg.textContent = 'تم إيقاف حسابك مؤقتاً بواسطة مدير الإدارة. برجاء الانتظار حتى انتهاء العداد التنازلي التالية:';
-  modal.style.display = 'flex';
-  
-  function updateTimer(){
-    const remaining = targetTime - Date.now();
-    if(remaining <= 0){
-      modal.style.display = 'none';
-      showAlert('تم انتهاء فترة الإيقاف! يمكنك الآن تسجيل الدخول.');
-      return;
-    }
-    const hrs = Math.floor(remaining / (1000 * 60 * 60));
-    const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-    const secs = Math.floor((remaining % (1000 * 60)) / 1000);
-    timerDisp.textContent = `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-  }
-  updateTimer();
-  setInterval(updateTimer, 1000);
-}
-
-function refreshUser(user){
-  const users=getUsers();
-  const fresh = users.find(u=>cleanStr(u.username)===cleanStr(user.username));
-  if(fresh) { saveSession(fresh); return fresh; }
-  return user;
-}
-
-function getRoleTitle(roleKey){
-  switch(roleKey){
-    case 'platform_director': return 'رئيس المنصة — Platform Director';
-    case 'sector_director': return 'رئيس القطاع — Sector Director';
-    case 'area_manager': return 'مدير المنطقة — Area Manager';
-    case 'field_vet': return 'طبيب بيطري ميداني — Field Veterinarian';
-    default: return 'طبيب بيطري ميداني';
-  }
+  const modal=document.getElementById('lock-notice-modal');
+  const timerDisp=document.getElementById('lock-timer-display');
+  document.getElementById('lock-notice-msg').textContent='تم إيقاف حسابك مؤقتاً بواسطة الإدارة. انتظر حتى انتهاء العداد:';
+  modal.style.display='flex';
+  const tick=()=>{const rem=Math.max(0,targetTime-Date.now());const h=Math.floor(rem/3600000);const m=Math.floor((rem%3600000)/60000);const s=Math.floor((rem%60000)/1000);timerDisp.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;if(rem>0)setTimeout(tick,1000);else modal.style.display='none';};
+  tick();
 }
 
 function enterPlatform(user){
-  user = refreshUser(user);
   document.getElementById('gateway').style.display='none';
   document.getElementById('platform').classList.add('active');
-  document.getElementById('top-username').textContent=user.username;
-  
+  document.getElementById('top-username').textContent=user.username||'';
   if(user.role==='doctor'){
-    const roleKey = user.docRole || 'field_vet';
-    document.getElementById('user-role-display').innerHTML = `<i class="fa-solid fa-user-tie"></i> ${getRoleTitle(roleKey)}`;
-    document.getElementById('user-location-display').textContent = `المحافظة: ${user.gov || 'عام'} | المركز: ${user.district || 'عام'}`;
-    
-    // Set scope text
-    let scopeTxt = 'نطاق الإشراف: كامل الجمهورية';
-    if(roleKey === 'sector_director') scopeTxt = `نطاق القطاع: محافظة ${user.gov}`;
-    else if(roleKey === 'area_manager') scopeTxt = `نطاق المنطقة: مركز ${user.district} - ${user.gov}`;
-    else if(roleKey === 'field_vet') scopeTxt = `نطاق العمل الميداني: ${user.district} - ${user.gov}`;
-    document.getElementById('role-scope-badge').textContent = scopeTxt;
-    
-    // Show Area Manager Campaign Section in Settings if Area Manager
-    document.getElementById('area-manager-campaign-section').style.display = (roleKey === 'area_manager') ? 'block' : 'none';
-    
-    renderRoleMainDashboard(user, roleKey);
+    activeRoleKey=user.docRole||'field_vet';
+    updateRoleBanner(user,activeRoleKey);
+    renderMainTab(user,activeRoleKey);
+    renderSettingsTab(user,activeRoleKey);
     renderAccountTab(user);
   } else {
-    document.getElementById('user-role-display').innerHTML = `<i class="fa-solid fa-house-user"></i> حساب مواطن`;
-    document.getElementById('user-location-display').textContent = `${user.gov} - ${user.district || ''}`;
-    document.getElementById('role-scope-badge').textContent = 'عضو مجتمعي';
-    renderCitizenMainDashboard(user);
-    renderAccountTab(user);
+    activeRoleKey='citizen';
+    document.getElementById('user-role-display').innerHTML='<i class="fa-solid fa-house-user"></i> مواطن';
+    document.getElementById('user-location-display').textContent=`${user.gov} - ${user.district||''}`;
+    document.getElementById('role-scope-badge').textContent=user.gov;
+    renderCitizenMain();renderCitizenSettings();renderAccountTab(user);
   }
+}
+
+function updateRoleBanner(user,roleKey){
+  document.getElementById('user-role-display').innerHTML=`<i class="fa-solid ${getRoleIcon(roleKey)}"></i> ${getRoleTitle(roleKey)}`;
+  document.getElementById('user-location-display').textContent=`${user.gov||''} - ${user.district||''}`;
+  let scope='نطاق الإشراف: كامل الجمهورية';
+  if(roleKey==='sector_director')scope=`نطاق القطاع: محافظة ${user.gov||''}`;
+  else if(roleKey==='area_manager')scope=`نطاق المنطقة: مركز ${user.district||''} - ${user.gov||''}`;
+  else if(roleKey==='field_vet')scope=`نطاق الميداني: ${user.district||''} - ${user.gov||''}`;
+  document.getElementById('role-scope-badge').textContent=scope;
 }
 
 function switchRoleTab(tabId){
-  document.querySelectorAll('.nav-role-tab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  document.querySelectorAll('.fb-tab').forEach(b=>b.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
+  const fbTabId = tabId === 'tab-main' ? 'fb-tab-main' : (tabId === 'tab-settings' ? 'fb-tab-settings' : 'fb-tab-account');
+  document.getElementById(fbTabId)?.classList.add('active');
 }
 
-function renderRoleMainDashboard(user, roleKey){
-  const container = document.getElementById('role-dynamic-main');
-  let html = '';
-  
-  if(roleKey === 'platform_director'){
-    html = `
-      <div style="background:#fff;padding:16px 20px;border-radius:12px;margin-bottom:20px;display:flex;gap:14px;align-items:center;box-shadow:var(--shadow)">
-        <label style="font-weight:800;color:var(--brown)"><i class="fa-solid fa-filter"></i> تصفية النطاق الجغرافي:</label>
-        <select style="max-width:250px" onchange="showAlert('تم تصفية البيانات بنجاح')">
-          <option>جميع المحافظات (الجمهورية)</option>
-          ${GOVS_ALL.map(g=>`<option>${g}</option>`).join('')}
-        </select>
-      </div>
+function getStoredReports(){try{return JSON.parse(localStorage.getItem('rafiq_reports'))||[];}catch{return[];}}
+function saveStoredReports(r){localStorage.setItem('rafiq_reports',JSON.stringify(r));}
+function getStoredIncidents(){try{return JSON.parse(localStorage.getItem('rafiq_incidents'))||[];}catch{return[];}}
+function saveStoredIncidents(inc){localStorage.setItem('rafiq_incidents',JSON.stringify(inc));}
+function getStoredInquiries(){try{return JSON.parse(localStorage.getItem('rafiq_inquiries'))||[];}catch{return[];}}
+function saveStoredInquiries(inq){localStorage.setItem('rafiq_inquiries',JSON.stringify(inq));}
 
-      <div class="card-grid">
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-file-shield"></i> 1. جميع تقارير الأطباء الميدانيين (شاملة)</h3>
-          <div class="data-item-row">
-            <div><strong>تقرير تطعيم حي الشرق</strong><br><small>الطبيب: د. أحمد علي | النتيجة: منجز</small></div>
-            <span class="badge" style="background:#d4edda;color:#155724">مغلق من مدير المنطقة</span>
-          </div>
-          <div class="data-item-row">
-            <div><strong>تقرير مسح المعادي</strong><br><small>الطبيب: د. سارة محمود | النتيجة: قيد المراجعة</small></div>
-            <span class="badge" style="background:#fff3cd;color:#856404">مفتوح لم يُغلق</span>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-user-doctor"></i> 2. جميع الأطباء بالجمهورية</h3>
-          <div class="data-item-row clickable" onclick="openChatWith('د. محمد صلاح (خريج)')">
-            <div><strong>د. محمد صلاح</strong> (خريج - مدير منطقة)<br><small>المستهدف: القاهرة | التقييم: 98/100</small></div>
-            <i class="fa-solid fa-comments" style="color:var(--gold)"></i>
-          </div>
-          <div class="data-item-row clickable" onclick="openChatWith('د. ياسمين حسن (طالبة)')">
-            <div><strong>د. ياسمين حسن</strong> (طالبة - ميداني)<br><small>المستهدف: الجيزة | التقييم: 92/100</small></div>
-            <i class="fa-solid fa-comments" style="color:var(--gold)"></i>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-bell-concierge"></i> 3. جميع بلاغات المواطنين بالعقود والوقت</h3>
-          <div class="data-item-row clickable" onclick="showAlert('تفاصيل البلاغ #102\\nالمواطن: علي خالد\\nالموقع: مدينة نصر\\nالسبب: وجود كلب مصاب\\nالوقت المنقضي: 45 دقيقة\\nالحالة: تم الاستجابة')">
-            <div><strong>بلاغ كلب مصاب #102</strong><br><small>منذ 45 دقيقة | مدينة نصر</small></div>
-            <span class="badge" style="background:#d4edda;color:#155724">تم الاستجابة ✅</span>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-circle-question"></i> 4. رسائل استفسارات المواطنين للدكاترة</h3>
-          <div class="data-item-row clickable" onclick="openChatWith('المواطن محمود سامي')">
-            <div><strong>استفسار: جدول التطعيمات المجانية</strong><br><small>المواطن: محمود سامي | المجيب: د. أحمد</small></div>
-            <i class="fa-solid fa-reply" style="color:var(--brown)"></i>
-          </div>
-        </div>
-      </div>
-    `;
-  } else if(roleKey === 'sector_director'){
-    html = `
-      <div style="background:#fff;padding:16px 20px;border-radius:12px;margin-bottom:20px;display:flex;gap:14px;align-items:center;box-shadow:var(--shadow)">
-        <label style="font-weight:800;color:var(--brown)"><i class="fa-solid fa-filter"></i> تصفية المراكز في محافظة ${user.gov}:</label>
-        <select style="max-width:250px" onchange="showAlert('تم تصفية المركز بنجاح')">
-          <option>جميع المراكز بالمحافظة</option>
-          ${(GOV_DATA[user.gov] || []).map(d=>`<option>${d}</option>`).join('')}
-        </select>
-      </div>
-
-      <div class="card-grid">
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-file-lines"></i> 1. تقارير الأطباء الميدانيين بالمحافظة</h3>
-          <div class="data-item-row">
-            <div><strong>تقرير حملة الترقيم</strong><br><small>تقديم التقرير: اليوم 10:00 ص | تقديم البلاغ: أمس 8:00 م</small></div>
-            <span class="badge" style="background:#d4edda;color:#155724">مغلق من مدير المنطقة</span>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-user-doctor"></i> 2. أطباء محافظة ${user.gov}</h3>
-          <div class="data-item-row clickable" onclick="openChatWith('د. حسام عادل')">
-            <div><strong>د. حسام عادل</strong> (خريج - مدير منطقة)<br><small>المركز: ${user.district || 'المركز الأول'} | التقييم: 95/100</small></div>
-            <i class="fa-solid fa-comments" style="color:var(--gold)"></i>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-headset"></i> 3. بلاغات المواطنين بالمحافظة</h3>
-          <div class="data-item-row clickable" onclick="showAlert('تفاصيل البلاغ\\nالمواطن: كمال إبراهيم\\nالمركز: ${user.district || 'المركز الرئيسي'}\\nالسبب: بلاغ عن تجمع حاد\\nمر على البلاغ: ساعة و 15 دقيقة')">
-            <div><strong>بلاغ #205 - ${user.district || 'المركز'}</strong><br><small>مر عليه: 1 ساعة و 15 دقيقة</small></div>
-            <span class="badge" style="background:#fff3cd;color:#856404">قيد الاستجابة</span>
-          </div>
-        </div>
-      </div>
-    `;
-  } else if(roleKey === 'area_manager'){
-    html = `
-      <div class="card-grid">
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-square-check"></i> 1. تقارير البلاغات الميدانية بالمركز</h3>
-          <div class="data-item-row">
-            <div><strong>تقرير تطعيم حي السلام</strong><br><small>الطبيب الميداني: د. رامي السعيد</small></div>
-            <span class="badge" style="background:#d4edda;color:#155724">تم التعامل بالشكل السليم ✅</span>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-star"></i> 2. تقييم كفاءة الأطباء الميدانيين (نظام الـ 100 درجة)</h3>
-          <div class="data-item-row">
-            <div><strong>د. رامي السعيد</strong> (طالب)<br><small>درجة التقييم الحالية: 95 / 100</small></div>
-            <button class="btn btn-gold" onclick="openEvalModal('د. رامي السعيد')"><i class="fa-solid fa-pen-to-square"></i> تقييم الكفاءة</button>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-comments"></i> 3. المحادثات ومتابعة البلاغات بالمركز</h3>
-          <div class="data-item-row clickable" onclick="openChatWith('د. رامي السعيد')">
-            <div><strong>محادثات الطبيب د. رامي مع المواطنين</strong></div>
-            <i class="fa-solid fa-eye" style="color:var(--gold)"></i>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-ranking-star"></i> 4. تقييم البلاغات بالنجوم وإضافة ملاحظات</h3>
-          <div class="data-item-row">
-            <div>
-              <strong>بلاغ #301 - حي الأمل</strong><br>
-              <small style="color:var(--gold-dark)"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> (5/5 نجوم)</small>
-            </div>
-            <button class="btn btn-gold" onclick="showAlert('ملاحظة للميداني: ممتازة سرعة الوصول ودقة التوثيق.')">الملاحظات</button>
-          </div>
-        </div>
-      </div>
-    `;
-  } else {
-    // Field Vet
-    html = `
-      <div class="card-grid">
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-clipboard-list"></i> 1. تقاريري الميدانية والبلاغات المستلمة</h3>
-          <div class="data-item-row">
-            <div><strong>تقرير تطعيم حي الأمل #401</strong><br><small>ملاحظة المدير: ممتاز والتوثيق مكتمل</small></div>
-            <span class="badge" style="background:#d4edda;color:#155724">موافق عليه من المدير ✅</span>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-users"></i> 2. قيادات منطقتي والزملاء</h3>
-          <div class="data-item-row clickable" onclick="openChatWith('مدير المنطقة - د. محمد')">
-            <div><strong>د. محمد أحمد</strong> (مدير المنطقة)<br><small>تواصل مباشر واتصال</small></div>
-            <i class="fa-solid fa-phone" style="color:var(--success)"></i>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <h3><i class="fa-solid fa-circle-question"></i> 3. استفسارات المواطنين المباشرة</h3>
-          <div class="data-item-row clickable" onclick="openChatWith('المواطن شريف')">
-            <div><strong>سؤال: أعراض السعار الأولى؟</strong><br><small>تم الرد والمتابعة</small></div>
-            <i class="fa-solid fa-comments" style="color:var(--gold)"></i>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  container.innerHTML = html;
+function renderMainTab(user,roleKey){
+  const c=document.getElementById('role-dynamic-main');
+  if(roleKey==='platform_director')c.innerHTML=renderPlatformDirectorMain(user);
+  else if(roleKey==='sector_director')c.innerHTML=renderSectorDirectorMain(user);
+  else if(roleKey==='area_manager')c.innerHTML=renderAreaManagerMain(user);
+  else c.innerHTML=renderFieldVetMain(user);
 }
 
-function renderCitizenMainDashboard(user){
-  const container = document.getElementById('role-dynamic-main');
-  container.innerHTML = `
-    <div class="panel-card" style="margin-bottom:20px">
-      <h3><i class="fa-solid fa-circle-plus"></i> تقديم بلاغ أو استفسار جديد</h3>
-      <p style="color:var(--text-muted);margin-bottom:14px">يمكنك إرسال بلاغ عن حيوان مصاب أو إرسال استفسار طبي لأطباء المنطقة.</p>
-      <div class="form-group"><label>تفاصيل البلاغ / الاستفسار</label><textarea id="cit-msg" placeholder="اكتب تفاصيل الموقع والحيوان..."></textarea></div>
-      <button class="btn-submit" onclick="showAlert('تم إرسال البلاغ بنجاح إلى أطباء المنطقة والقيادات!')"><i class="fa-solid fa-paper-plane"></i> إرسال البلاغ فوراً</button>
+function doctorCardHtml(d){
+  const score=d.evaluation?.total||100;
+  return `<div class="doctor-card clickable" onclick="showDoctorChats('${d.username}','${d.username}')">
+    <div style="flex:1">
+      <strong>د. ${d.username}</strong> <span class="badge ${d.academicStatus==='graduate'?'badge-blue':'badge-gray'}" style="font-size:0.75rem">${d.academicStatus==='graduate'?'خريج':'طالب'}</span>
+      <br><small style="color:var(--text-muted)">${getRoleTitle(d.docRole)} | ${d.gov||'-'} - ${d.district||'-'}</small>
+      <div style="margin-top:6px">
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px"><span>التقييم</span><span style="font-weight:800;color:var(--gold-dark)">${score}/100</span></div>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width:${score}%"></div></div>
+      </div>
     </div>
-  `;
+    <i class="fa-solid fa-comments" style="color:var(--gold);font-size:1.2rem;flex-shrink:0"></i>
+  </div>`;
 }
+
+function incidentRowHtml(inc,showStars=false){
+  return `<div class="data-item-row clickable" onclick="showIncidentDetail('${inc.id}',${showStars})">
+    <div>
+      <strong>بلاغ ${inc.id}</strong> — ${inc.citizen}<br>
+      <small style="color:var(--text-muted)">${inc.gov} - ${inc.district} | ${inc.date||''} ${inc.time||''} | 🕐 مر عليه: ${inc.elapsed||'منذ فترة قريبة'}</small><br>
+      <small><strong>السبب:</strong> ${inc.reason}</small>
+      ${inc.starRating>0?`<br><small style="color:#f4c23a">${'★'.repeat(inc.starRating)}${'☆'.repeat(5-inc.starRating)} تقييم الأداء</small>`:''}
+    </div>
+    <span class="badge ${inc.responded?'badge-green':'badge-red'}">${inc.responded?'✅ تمت الاستجابة':'❌ لم يتم الرد'}</span>
+  </div>`;
+}
+
+function inquiryRowHtml(inq){
+  return `<div class="data-item-row clickable" onclick="showAlert('استفسار #${inq.id||''}\\nالمواطن: ${inq.citizen}\\nالسؤال: ${inq.question}\\nالإجابة: ${inq.answer||'بانتظار الإجابة'}\\nالتاريخ: ${inq.date||''}')">
+    <div><strong>${inq.question}</strong><br><small style="color:var(--text-muted)">المواطن: ${inq.citizen} | ${inq.date||''}</small></div>
+    <i class="fa-solid fa-comments" style="color:var(--gold)"></i>
+  </div>`;
+}
+
+function renderPlatformDirectorMain(user){
+  const allDocs=getUsers().filter(u=>u.role==='doctor');
+  const allReports=getStoredReports();
+  const allIncidents=getStoredIncidents();
+  const allInquiries=getStoredInquiries();
+  const govOptions=GOVS_ALL.map(g=>`<option>${g}</option>`).join('');
+
+  return `
+  <div class="filter-bar">
+    <label><i class="fa-solid fa-filter"></i> تصفية المحافظة:</label>
+    <select onchange="showAlert(this.value?'تم التصفية: '+this.value:'عرض جميع المحافظات')">
+      <option value="">جميع المحافظات</option>${govOptions}
+    </select>
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-file-lines"></i> ١- جميع التقارير المرفوعة من الأطباء الميدانيين وحالة القفل</div>
+  <div class="panel-card">
+    ${allReports.length?allReports.map(r=>`
+    <div class="data-item-row clickable" onclick="showAlert('تقرير: ${r.id}\\nالطبيب: ${r.doctor}\\nالمحافظة: ${r.gov} - ${r.district}\\nالبلاغ: ${r.incident}\\nتاريخ البلاغ: ${r.incidentDate}\\nتاريخ التقرير: ${r.reportDate}')">
+      <div>
+        <strong>${r.id}</strong> — ${r.doctor}<br>
+        <small style="color:var(--text-muted)">${r.gov} - ${r.district} | ${r.incident} | ${r.reportDate}</small>
+      </div>
+      <span class="badge ${r.locked?'badge-green':'badge-yellow'}">${r.locked?'✅ مغلق من المدير':'⏳ لم يُغلق بعد'}</span>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-folder-open"></i> لا توجد تقارير مرفوعة من الأطباء الميدانيين حتى الآن</div>'}
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-user-doctor"></i> ٢- جميع حسابات الأطباء (خريجين / طلبة / المسمى الوظيفي / التقييم)</div>
+  <div class="panel-card">${allDocs.length?allDocs.map(d=>doctorCardHtml(d)).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-user-doctor"></i> لا يوجد أطباء مسجلون في المنصة حتى الآن</div>'}</div>
+
+  <div class="section-hdr"><i class="fa-solid fa-triangle-exclamation"></i> ٤- جميع بلاغات المواطنين</div>
+  <div class="panel-card">${allIncidents.length?allIncidents.map(inc=>incidentRowHtml(inc,false)).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-bell-slash"></i> لا توجد بلاغات متقدمة من المواطنين حتى الآن</div>'}</div>
+
+  <div class="section-hdr"><i class="fa-solid fa-circle-question"></i> ٥- جميع استفسارات المواطنين مع الأطباء</div>
+  <div class="panel-card">${allInquiries.length?allInquiries.map(inq=>inquiryRowHtml(inq)).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-comments"></i> لا توجد استفسارات مسجلة حتى الآن</div>'}</div>`;
+}
+
+function renderSectorDirectorMain(user){
+  const gov=user.gov||'القاهرة';
+  const districts=(GOV_DATA[gov]||[]).map(d=>`<option>${d}</option>`).join('');
+  const allDocs=getUsers().filter(u=>u.role==='doctor' && u.gov===gov);
+  const allReports=getStoredReports().filter(r=>r.gov===gov);
+  const allIncidents=getStoredIncidents().filter(i=>i.gov===gov);
+  const allInquiries=getStoredInquiries().filter(i=>i.gov===gov);
+
+  return `
+  <div class="filter-bar">
+    <label><i class="fa-solid fa-filter"></i> تصفية المركز — محافظة ${gov}:</label>
+    <select onchange="showAlert(this.value?'تم التصفية: '+this.value:'عرض جميع مراكز '+gov)">
+      <option value="">جميع المراكز</option>${districts}
+    </select>
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-file-lines"></i> ١- تقارير الأطباء الميدانيين بمحافظة ${gov} (تاريخ البلاغ والتقرير وحالة القفل)</div>
+  <div class="panel-card">
+    ${allReports.length?allReports.map(r=>`
+    <div class="data-item-row clickable" onclick="showAlert('تقرير: ${r.id}\\nالطبيب: ${r.doctor}\\nالمركز: ${r.district}\\nالبلاغ: ${r.incident}')">
+      <div>
+        <strong>${r.id}</strong> — ${r.doctor} (${r.district})<br>
+        <small style="color:var(--text-muted)">تاريخ البلاغ: ${r.incidentDate||'-'} | تاريخ التقرير: ${r.reportDate||'-'}</small>
+      </div>
+      <span class="badge ${r.locked?'badge-green':'badge-yellow'}">${r.locked?'✅ مغلق':'⏳ مفتوح'}</span>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-folder-open"></i> لا توجد تقارير في محافظة ${gov} حتى الآن</div>'}
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-user-doctor"></i> ٢- أطباء محافظة ${gov} (خريجين / طلبة / المسمى الوظيفي / التقييم)</div>
+  <div class="panel-card">${allDocs.length?allDocs.map(d=>doctorCardHtml(d)).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-user-doctor"></i> لا يوجد أطباء مسجلون في محافظة ${gov} حتى الآن</div>'}</div>
+
+  <div class="section-hdr"><i class="fa-solid fa-triangle-exclamation"></i> ٤- بلاغات المواطنين في محافظة ${gov}</div>
+  <div class="panel-card">${allIncidents.length?allIncidents.map(inc=>incidentRowHtml(inc,false)).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-bell-slash"></i> لا توجد بلاغات بمحافظة ${gov} حتى الآن</div>'}</div>
+
+  <div class="section-hdr"><i class="fa-solid fa-circle-question"></i> ٥- استفسارات المواطنين بالمحافظة</div>
+  <div class="panel-card">${allInquiries.length?allInquiries.map(inq=>inquiryRowHtml(inq)).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-comments"></i> لا توجد استفسارات بمحافظة ${gov} حتى الآن</div>'}</div>`;
+}
+
+function renderAreaManagerMain(user){
+  const district=user.district||'المركز';
+  const gov=user.gov||'';
+  const allDocs=getUsers().filter(u=>u.role==='doctor' && (u.docRole==='field_vet' || u.district===district));
+  const allReports=getStoredReports().filter(r=>r.district===district);
+  const allIncidents=getStoredIncidents().filter(i=>i.district===district || i.gov===gov);
+  const allInquiries=getStoredInquiries();
+
+  return `
+  <div class="section-hdr"><i class="fa-solid fa-file-lines"></i> ١- تقارير الأطباء الميدانيين في مركز ${district}</div>
+  <div class="panel-card">
+    ${allReports.length?allReports.map(r=>`
+    <div class="data-item-row clickable" onclick="showAlert('تقرير: ${r.id}\\nالطبيب: ${r.doctor}\\nالبلاغ: ${r.incident}')">
+      <div>
+        <strong>${r.id}</strong> — ${r.doctor}<br>
+        <small style="color:var(--text-muted)">${r.incident} | ${r.reportDate||''}</small>
+      </div>
+      <span class="badge ${r.properlyHandled?'badge-green':'badge-red'}">${r.properlyHandled?'✅ تعامل صحيح':'❌ غير صحيح'}</span>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-folder-open"></i> لا توجد تقارير في هذا المركز حتى الآن</div>'}
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-user-doctor"></i> ٢- الأطباء الميدانيون في منطقتك (تقييم الكفاءة من 100)</div>
+  <div class="panel-card">
+    ${allDocs.length?allDocs.map(d=>`
+    <div class="doctor-card">
+      <div style="flex:1">
+        <strong>د. ${d.username}</strong> <span class="badge ${d.academicStatus==='graduate'?'badge-blue':'badge-gray'}">${d.academicStatus==='graduate'?'خريج':'طالب'}</span>
+        <br><small style="color:var(--text-muted)">طبيب ميداني | ${d.district||district}</small>
+        <div style="margin-top:6px">
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px"><span>التقييم الإجمالي</span><span style="font-weight:800;color:var(--gold-dark)">${d.evaluation?.total||100}/100</span></div>
+          <div class="score-bar-bg"><div class="score-bar-fill" style="width:${d.evaluation?.total||100}%"></div></div>
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-gold" onclick="openEvalModal('${d.username}','${d.username}')"><i class="fa-solid fa-star-half-stroke"></i> تقييم 100</button>
+        <button class="btn btn-gray" onclick="showDoctorChats('${d.username}','${d.username}')"><i class="fa-solid fa-comments"></i></button>
+      </div>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-user-doctor"></i> لا يوجد أطباء ميدانيين في هذا المركز حتى الآن</div>'}
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-triangle-exclamation"></i> ٤- بلاغات المواطنين (تقييم بالنجوم وملاحظات للطبيب)</div>
+  <div class="panel-card">${allIncidents.length?allIncidents.map(inc=>incidentRowHtml(inc,true)).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-bell-slash"></i> لا توجد بلاغات في هذا المركز حتى الآن</div>'}</div>
+
+  <div class="section-hdr"><i class="fa-solid fa-circle-question"></i> ٥- استفسارات المواطنين</div>
+  <div class="panel-card">${allInquiries.length?allInquiries.map(inq=>inquiryRowHtml(inq)).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-comments"></i> لا توجد استفسارات مسجلة حتى الآن</div>'}</div>`;
+}
+
+function renderFieldVetMain(user){
+  const district=user.district||'المركز';
+  const gov=user.gov||'';
+  const myReports=getStoredReports().filter(r=>r.doctor===user.username);
+  const myIncidents=getStoredIncidents().filter(i=>i.doctor===user.username || (i.district===district && i.gov===gov));
+  const myInquiries=getStoredInquiries();
+  const areaLeaders=getUsers().filter(u=>u.role==='doctor' && u.username!==user.username);
+
+  return `
+  <div class="section-hdr"><i class="fa-solid fa-clipboard-list"></i> ١- تقاريري الميدانية — حالة التسليم والموافقة والبلاغات الجديدة</div>
+  <div class="panel-card">
+    ${myReports.length?myReports.map(r=>`
+    <div class="data-item-row">
+      <div>
+        <strong>تقرير: ${r.id}</strong><br>
+        <small style="color:var(--text-muted)">البلاغ: ${r.incident} | تاريخ التسليم: ${r.reportDate||'-'}</small>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <span class="badge ${r.submitted?'badge-green':'badge-yellow'}">${r.submitted?'✅ تم التسليم':'⏳ لم يُقدّم'}</span>
+        <span class="badge ${r.locked?'badge-blue':'badge-yellow'}">${r.locked?'✅ موافق عليه':'⏳ بانتظار الموافقة'}</span>
+      </div>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-clipboard-list"></i> لم تقم برفع تقارير ميدانية بعد</div>'}
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-users"></i> ٢- دليل القيادات والزملاء في منطقتك (محادثة / اتصال)</div>
+  <div class="panel-card">
+    ${areaLeaders.length?areaLeaders.map(p=>`
+    <div class="data-item-row clickable" onclick="openChatWith('${p.username}')">
+      <div><strong>د. ${p.username}</strong><br><small style="color:var(--text-muted)">${getRoleTitle(p.docRole)} | ${p.gov||''} - ${p.district||''}</small></div>
+      <div class="row-actions">
+        <button class="btn btn-gold" onclick="event.stopPropagation();openChatWith('${p.username}')"><i class="fa-solid fa-comments"></i> محادثة</button>
+        <button class="btn btn-success" onclick="event.stopPropagation();showAlert('جاري الاتصال بـ د. ${p.username}...')"><i class="fa-solid fa-phone"></i> اتصال</button>
+      </div>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-users"></i> لا يوجد أطباء آخرون مسجلون في منطقتك حالياً</div>'}
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-bell"></i> ٤- البلاغات التي استلمتها (التقييم وملاحظات مدير المنطقة)</div>
+  <div class="panel-card">
+    ${myIncidents.length?myIncidents.map(inc=>`
+    <div class="data-item-row clickable" onclick="showAlert('تفاصيل البلاغ ${inc.id}\\nالمواطن: ${inc.citizen}\\nالموقع: ${inc.district} - ${inc.address}\\nالسبب: ${inc.reason}\\nالتاريخ: ${inc.date||''} ${inc.time||''}\\n${inc.starRating>0?\"تقييم أدائك: \"+inc.starRating+\"/5 نجوم\":\\'لم يُقيَّم بعد\\'}\\n${inc.note?\"ملاحظة المدير: \"+inc.note:\\'لا توجد ملاحظات\\'}')">
+      <div>
+        <strong>بلاغ ${inc.id}</strong> — ${inc.citizen}<br>
+        <small style="color:var(--text-muted)">${inc.district} | ${inc.date||''} ${inc.time||''} | 🕐 مر عليه: ${inc.elapsed||'مؤخراً'}</small><br>
+        ${inc.starRating>0?`<small style="color:#f4c23a">${'★'.repeat(inc.starRating)}${'☆'.repeat(5-inc.starRating)} تقييم أدائك</small>`:'<small style="color:var(--text-muted)">لم يُقيَّم بعد</small>'}
+      </div>
+      <span class="badge ${inc.responded?'badge-green':'badge-yellow'}">${inc.responded?'✅ تمت الاستجابة':'⏳ جاري الاستجابة'}</span>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-bell-slash"></i> لا توجد بلاغات مخصصة لك حتى الآن</div>'}
+  </div>
+
+  <div class="section-hdr"><i class="fa-solid fa-circle-question"></i> ٥- استفسارات المواطنين المستلمة</div>
+  <div class="panel-card">
+    ${myInquiries.length?myInquiries.map(inq=>`
+    <div class="data-item-row clickable" onclick="openChatWith('${inq.citizen}')">
+      <div>
+        <strong>${inq.question}</strong><br>
+        <small style="color:var(--text-muted)">المواطن: ${inq.citizen} | ${inq.date||''}</small><br>
+        <small style="color:var(--success)">إجابتك: ${inq.answer||'لم يتم الرد بعد'}</small>
+      </div>
+      <i class="fa-solid fa-comments" style="color:var(--gold)"></i>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-circle-question"></i> لا توجد استفسارات من مواطنين حتى الآن</div>'}
+  </div>`;
+}
+
+function renderCitizenMain(){
+  document.getElementById('role-dynamic-main').innerHTML=`
+  <div class="panel-card">
+    <h3><i class="fa-solid fa-triangle-exclamation"></i> تقديم بلاغ جديد</h3>
+    <div class="form-group"><label>سبب البلاغ</label><textarea id="cit-incident-reason" placeholder="اشرح المشكلة بالتفصيل..." style="min-height:80px"></textarea></div>
+    <div class="form-group"><label>العنوان التفصيلي</label><input type="text" id="cit-incident-address" placeholder="أدخل العنوان بالتفصيل"/></div>
+    <button class="btn-submit" onclick="submitCitizenIncident()"><i class="fa-solid fa-paper-plane"></i> إرسال البلاغ</button>
+  </div>
+  <div class="panel-card">
+    <h3><i class="fa-solid fa-circle-question"></i> استفسارات للأطباء</h3>
+    <div class="form-group"><label>سؤالك</label><textarea id="cit-inquiry-q" placeholder="اكتب سؤالك هنا..." style="min-height:70px"></textarea></div>
+    <button class="btn-submit" onclick="submitCitizenInquiry()"><i class="fa-solid fa-paper-plane"></i> إرسال الاستفسار</button>
+  </div>`;
+}
+
+function submitCitizenIncident(){
+  const r=v('cit-incident-reason'); const a=v('cit-incident-address');
+  if(!r){showAlert('أدخل سبب البلاغ');return;}
+  const sess=getSession()||{};
+  const list=getStoredIncidents();
+  const newInc={
+    id:'INC-'+(Math.floor(100+Math.random()*900)),
+    citizen:sess.username||'مواطن',
+    phone:sess.phone||'غير مدخل',
+    gov:sess.gov||'القاهرة',
+    district:sess.district||'المركز الرئيسي',
+    address:a||sess.address||'مصر',
+    reason:r,
+    date:new Date().toISOString().split('T')[0],
+    time:new Date().toLocaleTimeString('ar-EG'),
+    elapsed:'منذ لحظات',
+    responded:false,
+    doctor:'',
+    starRating:0,
+    note:''
+  };
+  list.push(newInc); saveStoredIncidents(list);
+  showAlert('تم إرسال بلاغك بنجاح!\nسيتم إشعاره للأطباء الميدانيين في منطقتك فوراً.');
+  document.getElementById('cit-incident-reason').value='';
+  document.getElementById('cit-incident-address').value='';
+}
+
+function submitCitizenInquiry(){
+  const q=v('cit-inquiry-q'); if(!q){showAlert('أدخل سؤالك');return;}
+  const sess=getSession()||{};
+  const list=getStoredInquiries();
+  const newInq={
+    id:'INQ-'+(Math.floor(100+Math.random()*900)),
+    citizen:sess.username||'مواطن',
+    gov:sess.gov||'القاهرة',
+    question:q,
+    answer:'',
+    date:new Date().toISOString().split('T')[0]
+  };
+  list.push(newInq); saveStoredInquiries(list);
+  showAlert('تم إرسال استفسارك بنجاح!\nسيقوم أحد الأطباء بالرد عليه قريباً.');
+  document.getElementById('cit-inquiry-q').value='';
+}
+
+function renderSettingsTab(user,roleKey){
+  const allDocs=getUsers().filter(u=>u.role==='doctor');
+  let html=`
+  <div class="settings-section">
+    <h3><i class="fa-solid fa-sliders"></i> إعدادات المنصة</h3>
+    <div class="form-group" style="max-width:300px"><label>لغة التطبيق</label><select><option>العربية (Arabic)</option><option>English</option></select></div>
+    <div class="form-group" style="max-width:300px"><label>الإشعارات</label><select><option>تفعيل جميع الإشعارات</option><option>إشعارات البلاغات فقط</option><option>إيقاف الإشعارات</option></select></div>
+  </div>
+  <div class="settings-section">
+    <h3><i class="fa-solid fa-users-viewfinder"></i> دليل الأطباء للتواصل</h3>
+    <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:12px">اضغط على اسم أي طبيب للتواصل المباشر معه</p>
+    ${allDocs.length?allDocs.map(d=>`
+    <div class="data-item-row clickable" onclick="openChatWith('${d.username}')">
+      <div><strong>د. ${d.username}</strong> — <span style="color:var(--text-muted)">${getRoleTitle(d.docRole)}</span><br><small style="color:var(--text-muted)">${d.gov||''} - ${d.district||''}</small></div>
+      <div class="row-actions">
+        <button class="btn btn-gold" onclick="event.stopPropagation();openChatWith('${d.username}')"><i class="fa-solid fa-comments"></i> محادثة</button>
+        <button class="btn btn-success" onclick="event.stopPropagation();showAlert('جاري الاتصال بـ د. ${d.username}...')"><i class="fa-solid fa-phone"></i> اتصال</button>
+      </div>
+    </div>`).join(''):'<div class="data-item-row empty-state"><i class="fa-solid fa-user-doctor"></i> لا يوجد أطباء مسجلون في المنصة حتى الآن</div>'}
+  </div>`;
+
+  if(roleKey==='area_manager'){
+    const fieldVets=getUsers().filter(u=>u.role==='doctor' && u.docRole==='field_vet');
+    html+=`
+  <div class="settings-section">
+    <h3><i class="fa-solid fa-bullhorn"></i> إنشاء وتكليف حملة ميدانية جديدة</h3>
+    <div class="form-group"><label>اسم الحملة</label><input type="text" id="camp-name" placeholder="مثال: حملة التطعيم والتعقيم بالمركز"/></div>
+    <div class="form-group"><label>تاريخ ووقت الحملة</label><input type="datetime-local" id="camp-datetime"/></div>
+    <div class="form-group">
+      <label>تحديد الأطباء الميدانيين المشاركين في منطقتك</label>
+      ${fieldVets.length?fieldVets.map(d=>`
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer">
+        <input type="checkbox" value="${d.username}" checked/> د. ${d.username}
+      </label>`).join(''):'<div style="font-size:0.85rem;color:var(--text-muted)">لا يوجد أطباء ميدانيين مسجلين بالمركز حالياً</div>'}
+    </div>
+    <div class="form-group">
+      <label>خريطة نطاق المركز (تحديد جزء من المركز للحملة)</label>
+      <div class="map-sim"><i class="fa-solid fa-location-dot map-pin"></i><span style="font-weight:800;color:var(--brown)">خريطة حدود مركز ${user.district||'المركز'} — اضغط لتحديد الموقع</span></div>
+      <div class="form-group"><label>إضافة بيانات على الخريطة</label><input type="text" id="camp-map-note" placeholder="مثال: التجمع أمام الوحدة البيطرية"/></div>
+    </div>
+    <button class="btn-submit" onclick="createCampaign()"><i class="fa-solid fa-plus"></i> جدولة وإنشاء الحملة</button>
+
+    <div style="margin-top:28px;border-top:2px dashed var(--gold);padding-top:20px">
+      <h3 style="font-size:1rem;font-weight:800;color:var(--brown);margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="fa-solid fa-clipboard-user"></i> تسجيل حضور وغياب الأطباء عند موعد الحملة</h3>
+      ${fieldVets.length?fieldVets.map(d=>`
+      <div class="data-item-row">
+        <div><strong>د. ${d.username}</strong><br><small id="att-time-${d.username}" style="color:var(--text-muted)">لم يتم تسجيل الحضور بعد</small></div>
+        <div class="row-actions">
+          <button class="btn btn-success" onclick="markAttendance('${d.username}','حاضر')"><i class="fa-solid fa-check"></i> تسجيل حضور (وقت الوصول)</button>
+          <button class="btn btn-danger" onclick="markAttendance('${d.username}','غائب')"><i class="fa-solid fa-xmark"></i> تسجيل غياب</button>
+        </div>
+      </div>`).join(''):'<div class="data-item-row empty-state">لا يوجد أطباء ميدانيين أخذ غيابهم</div>'}
+    </div>
+  </div>`;}
+
+  document.getElementById('role-dynamic-settings').innerHTML=html;
+}
+
+function renderCitizenSettings(){
+  document.getElementById('role-dynamic-settings').innerHTML=`
+  <div class="settings-section">
+    <h3><i class="fa-solid fa-sliders"></i> إعدادات الحساب</h3>
+    <div class="form-group" style="max-width:300px"><label>لغة التطبيق</label><select><option>العربية</option><option>English</option></select></div>
+  </div>`;}
 
 function renderAccountTab(user){
-  const grid = document.getElementById('account-info-grid');
-  grid.innerHTML = `
-    <div class="info-item"><div class="lbl"><i class="fa-solid fa-user"></i> اسم المستخدم</div><div class="val">${user.username}</div></div>
-    <div class="info-item"><div class="lbl"><i class="fa-solid fa-envelope"></i> البريد الإلكتروني</div><div class="val">${user.email || '-'}</div></div>
-    <div class="info-item"><div class="lbl"><i class="fa-solid fa-phone"></i> رقم الموبايل</div><div class="val">${user.phone || '-'}</div></div>
-    <div class="info-item"><div class="lbl"><i class="fa-solid fa-calendar"></i> تاريخ الميلاد</div><div class="val">${user.dob || '-'}</div></div>
-    <div class="info-item"><div class="lbl"><i class="fa-solid fa-map"></i> المحافظة</div><div class="val">${user.gov || '-'}</div></div>
-    <div class="info-item"><div class="lbl"><i class="fa-solid fa-map-pin"></i> المركز / القسم</div><div class="val">${user.district || '-'}</div></div>
-    ${user.role==='doctor' ? `<div class="info-item"><div class="lbl"><i class="fa-solid fa-user-tie"></i> المسمى الوظيفي</div><div class="val" style="color:var(--gold-dark)">${getRoleTitle(user.docRole)}</div></div>` : ''}
-  `;
+  const devIp=user.deviceIp||localStorage.getItem('rafiq_device_ip')||'محلي (هذا الجهاز)';
+  const fields=[
+    ['fa-user','اسم المستخدم',user.username||'-'],
+    ['fa-envelope','البريد الإلكتروني',user.email||'-'],
+    ['fa-phone','رقم الموبايل',user.phone||'-'],
+    ['fa-calendar-days','تاريخ الميلاد',user.dob||'-'],
+    ['fa-map','المافظة',user.gov||'-'],
+    ['fa-map-pin','المركز / القسم',user.district||'-'],
+    ['fa-network-wired','معرف الجهاز المسجل (IP/Device)',devIp],
+    ...(user.role==='doctor'?[
+      ['fa-school','الجامعة',user.university||'-'],
+      ['fa-user-graduate','الوضع الأكاديمي',user.academicStatus==='student'?'طالب':'خريج'],
+      ['fa-user-tie','الدور الوظيفي',getRoleTitle(user.docRole)],
+      ['fa-star','التقييم الإجمالي',(user.evaluation?.total||100)+' / 100'],
+      ['fa-key','كلمة السر الخاصة بالحساب',user.pass||'-']
+    ]:[
+      ['fa-map-location-dot','العنوان التفصيلي',user.address||'-'],
+      ['fa-key','كلمة السر الخاصة بالحساب',user.pass||'-']
+    ])
+  ];
+  document.getElementById('account-info-grid').innerHTML=fields.map(([icon,lbl,val])=>`
+  <div class="info-item">
+    <div class="lbl"><i class="fa-solid ${icon}"></i> ${lbl}</div>
+    <div class="val">${val}</div>
+  </div>`).join('');}
+
+function showDoctorChats(username,name){
+  currentChatTarget=name;
+  document.getElementById('chat-title').innerHTML=`<i class="fa-solid fa-comments"></i> محادثات د. ${name}`;
+  document.getElementById('chat-messages-container').innerHTML=`
+    <div style="text-align:center;color:var(--text-muted);font-size:0.85rem;margin-bottom:8px">— محادثات مع المواطنين —</div>
+    <div class="chat-msg-bubble other"><strong>مواطن</strong><br>السلام عليكم دكتور، كيف حال الحالة في البلاغ؟</div>
+    <div class="chat-msg-bubble me">وعليكم السلام، تم تقديم العناية والمتابعة مستمرة.</div>
+    <div style="text-align:center;color:var(--text-muted);font-size:0.85rem;margin:8px 0">— محادثات مع الأطباء —</div>
+    <div class="chat-msg-bubble other"><strong>مدير المنطقة</strong><br>يرجى إنهاء توثيق التقرير في الموعد.</div>
+    <div class="chat-msg-bubble me">جاري رفع التقرير الميداني فوراً.</div>`;
+  document.getElementById('chat-modal').style.display='flex';
 }
 
-// EVALUATION LOGIC
-function openEvalModal(docName){
-  document.getElementById('eval-target-username').value = docName;
-  document.getElementById('eval-modal').style.display = 'flex';
-  updateEvalCalc();
-}
-
-function updateEvalCalc(){
-  const q1 = parseInt(document.getElementById('eval-q1').value);
-  const q2 = parseInt(document.getElementById('eval-q2').value);
-  const q3 = parseInt(document.getElementById('eval-q3').value);
-  const q4 = parseInt(document.getElementById('eval-q4').value);
-  const q5 = parseInt(document.getElementById('eval-q5').value);
-  const q6 = parseInt(document.getElementById('eval-q6').value);
-  
-  document.getElementById('score-val-1').textContent = `${q1} / 20`;
-  document.getElementById('score-val-2').textContent = `${q2} / 10`;
-  document.getElementById('score-val-3').textContent = `${q3} / 35`;
-  document.getElementById('score-val-4').textContent = `${q4} / 15`;
-  document.getElementById('score-val-5').textContent = `${q5} / 10`;
-  document.getElementById('score-val-6').textContent = `${q6} / 10`;
-  
-  const total = q1 + q2 + q3 + q4 + q5 + q6;
-  document.getElementById('eval-total-score').textContent = `${total} / 100`;
-}
-
-function saveDoctorEvaluation(){
-  document.getElementById('eval-modal').style.display = 'none';
-  const total = document.getElementById('eval-total-score').textContent;
-  showAlert(`تم حفظ تقييم الطبيب الميداني بنجاح! التقييم الإجمالي: ${total}`);
-}
-
-// CHAT SIMULATION LOGIC
 function openChatWith(name){
-  currentChatTarget = name;
-  document.getElementById('chat-title').innerHTML = `<i class="fa-solid fa-comments"></i> المحادثة مع: ${name}`;
-  const container = document.getElementById('chat-messages-container');
-  container.innerHTML = `
-    <div class="chat-msg-bubble other">مرحباً دكتور، كيف يمكنني المساعدة في البلاغ الميداني؟</div>
-    <div class="chat-msg-bubble me">أهلاً بك، تم الوصول إلى موقع الحيوان وبدء الفحص الأولي.</div>
-  `;
-  document.getElementById('chat-modal').style.display = 'flex';
+  currentChatTarget=name;
+  document.getElementById('chat-title').innerHTML=`<i class="fa-solid fa-comments"></i> محادثة مع ${name}`;
+  document.getElementById('chat-messages-container').innerHTML=`
+    <div class="chat-msg-bubble other">أهلاً بك، كيف يمكنني المساعدة؟</div>
+    <div class="chat-msg-bubble me">أهلاً دكتور، أود الاستفسار والتنسيق معك.</div>`;
+  document.getElementById('chat-modal').style.display='flex';
 }
 
 function sendChatMessage(){
-  const input = document.getElementById('chat-reply-input');
-  const txt = input.value.trim();
-  if(!txt) return;
-  
-  const container = document.getElementById('chat-messages-container');
-  const bubble = document.createElement('div');
-  bubble.className = 'chat-msg-bubble me';
-  bubble.textContent = txt;
-  container.appendChild(bubble);
-  input.value = '';
-  container.scrollTop = container.scrollHeight;
+  const input=document.getElementById('chat-reply-input');
+  const msg=input.value.trim();if(!msg)return;
+  const container=document.getElementById('chat-messages-container');
+  const b=document.createElement('div');b.className='chat-msg-bubble me';b.textContent=msg;
+  container.appendChild(b);container.scrollTop=container.scrollHeight;input.value='';
+  setTimeout(()=>{const r=document.createElement('div');r.className='chat-msg-bubble other';r.textContent='تم الاستلام، سأرد عليك قريباً...';container.appendChild(r);container.scrollTop=container.scrollHeight;},1200);
 }
 
-function openDoctorsDirectory(){
-  const users = getUsers().filter(u => u.role === 'doctor');
-  if(users.length === 0){
-    showAlert('لا يوجد أطباء آخرين متواجدين بالدليل حالياً.');
-    return;
-  }
-  let listTxt = 'دليل أطباء وقيادات المنصة:\n\n';
-  users.forEach(u => {
-    listTxt += `• د. ${u.username} (${getRoleTitle(u.docRole)}) - ${u.gov}\n`;
-  });
-  showAlert(listTxt);
+function showIncidentDetail(incId,showStars){
+  const inc=getStoredIncidents().find(i=>i.id===incId);if(!inc)return;
+  currentIncidentId=incId;incidentStarValue=inc.starRating||0;
+  document.getElementById('incident-detail-content').innerHTML=`
+  <div class="info-grid">
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-user"></i> المواطن</div><div class="val">${inc.citizen}</div></div>
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-phone"></i> رقم التواصل</div><div class="val">${inc.phone}</div></div>
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-map"></i> المحافظة / المركز</div><div class="val">${inc.gov} - ${inc.district}</div></div>
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-location-dot"></i> العنوان التفصيلي</div><div class="val">${inc.address}</div></div>
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-triangle-exclamation"></i> سبب البلاغ</div><div class="val">${inc.reason}</div></div>
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-calendar"></i> التاريخ والوقت</div><div class="val">${inc.date||''} — ${inc.time||''}</div></div>
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-clock"></i> الوقت المنقضي</div><div class="val">🕐 ${inc.elapsed||'منذ فترة قريبة'}</div></div>
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-user-doctor"></i> الطبيب المكلف</div><div class="val">${inc.doctor||'لم يُكلف بعد'}</div></div>
+    <div class="info-item"><div class="lbl"><i class="fa-solid fa-circle-check"></i> حالة البلاغ</div><div class="val"><span class="badge ${inc.responded?'badge-green':'badge-red'}">${inc.responded?'✅ تمت الاستجابة':'❌ لم تتم الاستجابة'}</span></div></div>
+  </div>`;
+  document.getElementById('incident-star-section').style.display=showStars?'block':'none';
+  if(showStars){updateStarDisplay();document.getElementById('incident-note-input').value=inc.note||'';}
+  document.getElementById('incident-modal').style.display='flex';
+}
+
+function closeIncidentModal(){document.getElementById('incident-modal').style.display='none';}
+function setIncidentStar(n){incidentStarValue=n;updateStarDisplay();}
+function updateStarDisplay(){document.querySelectorAll('#incident-stars .star').forEach((s,i)=>s.classList.toggle('lit',i<incidentStarValue));}
+
+function saveIncidentRating(){
+  const note=document.getElementById('incident-note-input').value.trim();
+  const incidents=getStoredIncidents();
+  const inc=incidents.find(i=>i.id===currentIncidentId);
+  if(inc){inc.starRating=incidentStarValue;inc.note=note;saveStoredIncidents(incidents);}
+  showAlert(`تم حفظ تقييم البلاغ!\nالتقييم: ${incidentStarValue}/5 نجوم${note?'\nالملاحظة: '+note:''}`);
+  closeIncidentModal();
+  renderMainTab(getSession()||{},activeRoleKey);
+}
+
+function openEvalModal(username,name){
+  document.getElementById('eval-target-username').value=username;
+  document.getElementById('eval-doctor-name').textContent=`الطبيب: د. ${name}`;
+  [1,2,3,4,5,6].forEach(n=>document.getElementById('eval-q'+n).value=[20,10,35,15,10,10][n-1]);
+  document.getElementById('eval-notes').value='';
+  updateEvalCalc();
+  document.getElementById('eval-modal').style.display='flex';
+}
+
+function updateEvalCalc(){
+  const max=[20,10,35,15,10,10];let total=0;
+  [1,2,3,4,5,6].forEach((n,i)=>{const val=parseInt(document.getElementById(`eval-q${n}`).value)||0;document.getElementById(`score-val-${n}`).textContent=`${val} / ${max[i]}`;total+=val;});
+  const color=total>=80?'var(--success)':total>=60?'var(--warning)':'var(--error)';
+  document.getElementById('eval-total-score').textContent=`${total} / 100`;
+  document.getElementById('eval-total-score').style.color=color;
+}
+
+function saveDoctorEvaluation(){
+  const username=v('eval-target-username'),notes=document.getElementById('eval-notes').value.trim();
+  const vals=[1,2,3,4,5,6].map(n=>parseInt(document.getElementById('eval-q'+n).value)||0);
+  const [q1,q2,q3,q4,q5,q6]=vals;const total=vals.reduce((a,b)=>a+b,0);
+  const users=getUsers();const idx=users.findIndex(u=>cleanStr(u.username)===cleanStr(username));
+  if(idx>-1){users[idx].evaluation={q1,q2,q3,q4,q5,q6,total,notes};saveUsers(users);}
+  showAlert(`تم حفظ تقييم الطبيب د. ${username} بنجاح!\nالدرجة النهائية: ${total}/100${notes?'\nالملاحظة: '+notes:''}`);
+  document.getElementById('eval-modal').style.display='none';
+  renderMainTab(getSession()||{},activeRoleKey);
 }
 
 function createCampaign(){
-  const name = v('camp-name');
-  const time = document.getElementById('camp-datetime').value;
-  if(!name || !time) return showAlert('برجاء إدخال اسم الحملة وتحديد الوقت والتاريخ.');
-  
-  showAlert(`تم حفظ وجدولة حملة "${name}" بتاريخ ${new Date(time).toLocaleString('ar-EG')} بنجاح!`);
-  
-  const list = document.getElementById('campaign-attendance-list');
-  list.innerHTML = `
-    <div class="data-item-row">
-      <div><strong>د. رامي السعيد</strong><br><small>وقت الوصول المسجل: ${new Date().toLocaleTimeString('ar-EG')}</small></div>
-      <span class="badge" style="background:#d4edda;color:#155724">حاضر (التزام بالمواعيد 10/10) ✅</span>
-    </div>
-  `;
+  const name=v('camp-name'),dt=v('camp-datetime'),note=v('camp-map-note');
+  if(!name||!dt){showAlert('يرجى إدخال اسم الحملة وتاريخها');return;}
+  showAlert(`تم جدولة وإنشاء الحملة بنجاح!\nالاسم: ${name}\nالتاريخ والوقت: ${dt}${note?'\nملاحظة الخريطة: '+note:''}\n\nتم إشعار كافة الأطباء الميدانيين المحددين بالمركز.`);
+}
+
+function markAttendance(username,status){
+  const now=new Date().toLocaleTimeString('ar-EG');
+  const el=document.getElementById('att-time-'+username);
+  if(el)el.textContent=`${status} — وقت الوصول: ${now}`;
+  showAlert(`تم تسجيل ${status} للطبيب د. ${username}!\nوقت الوصول: ${now}\nيتم تلقائياً الاحتساب ضمن درجة معيار الالتزام بمواعيد الحملات.`);
 }
 
 function logout(){clearSession();location.reload();}
-function showAlert(msg){document.getElementById('alert-msg').textContent=msg;document.getElementById('alert-modal').classList.add('active');}
-function closeAlert(){document.getElementById('alert-modal').classList.remove('active');}
 </script>
 </body>
 </html>
